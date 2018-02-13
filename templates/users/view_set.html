@@ -1,0 +1,330 @@
+{% extends 'base.html' %} {% block content %}
+
+<div style="width: 60%; margin-left:auto; margin-right:auto;padding-bottom:15%">
+    <div class="set_name">
+        <h2 class="ui center aligned header" style="padding-top:1%;">
+            <u>
+                Class {{ set.name }}
+            </u>
+        </h2>
+    </div>
+
+    <div class="ui two item menu" id="menu">
+        <a class="item active" id='students_button'>
+            <h3>
+                <u>Students</u>
+            </h3>
+        </a>
+        <a class="item" id='surveys_button'>
+            <h3>
+                <u>Surveys sent to {{ set.name }}</u>
+            </h3>
+        </a>
+    </div>
+
+    <!-- STUDENTS IN CLASS -->
+    <div id="students">
+        <div class="item">
+            <div class="content">
+                <button id="add_students_div" class="ui labeled icon button green">
+                    <i class="inverted plus icon"></i>
+                    Add Students
+                </button>
+                <button id="collapse_student_div" class="ui labeled icon button negative" style="display:none">
+                        <i class="inverted minus icon"></i>
+                        Collapse
+                    </button>
+                <div class="description"></div>
+                <div id="search_box" class="ui raised container segment" style="display:none">
+                    <div style="float:right">
+                        <button id="add_students" class="ui button green">
+                            Add
+                        </button>
+                    </div>
+                    <div class="ui left icon input">
+                        <input id="search_bar" type="text" placeholder="Search users...">
+                        <i class="users icon"></i>
+                    </div>
+                    <div style="padding-top:1%">
+                        <h3>Search Results:</h3>
+                        <div>
+                            <div class="ui relaxed divided list" id="suggested_students">
+                            </div>
+                        </div>
+                        <h3>Students that will be added:</h3>
+                        <div class="ui relaxed divided list" id="students_to_add">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="ui relaxed divided list">
+                    {% for student in students %}
+                    <div class="item" id="{{ student.id }}_div">
+
+                        <div class="right floated content">
+                            <div class="negative ui button compact remove_from_class" id="{{ student.id }}">Remove from Class</div>
+
+                        </div>
+
+                        <i class="large user icon middle aligned icon"></i>
+                        <div class="content">
+                            <div class="header">
+                                <h3>
+                                    <u>{{ student.get_full_name }}</u>
+                                </h3>
+                            </div>
+                            <div class="description">{{ student.email }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- STUDENTS END -->
+    <!-- SURVEYS -->
+    <div id='surveys' style="display:none">
+            <div class="item">
+                    <div class="content">
+                            <a href="/form/create/">
+                            <button class="ui labeled icon button green">
+                                    <i class="inverted plus icon"></i>
+                                    New Survey
+                            </button>
+                            </a>
+                    <div class="description"></div>
+                            
+                    </div>
+
+                </div>
+        <div class="ui relaxed divided list accordion">
+            
+            {% for form in forms %}
+
+            <div class="item">
+                <div class="right floated content">
+                    <div class="ui button compact resend_button" id="{{ form.id }}">Resend</div>
+                    
+                  </div>
+                <i class="large file text outline middle aligned icon"></i>
+                <div class="content">
+                    <a href="{{ form.get_absolute_url }}" class="header">
+                        <h3><u>{{ form.title }} </u></h3></a>
+                    
+                    <div class="description">Class:<a href="{{ form.setID.view_set }}"> {{ form.setID.name }}</a>
+                        <br>
+                        Times sent: {{ form.times_sent }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!--  SURVEYS END -->
+</div>
+<script type="text/javascript">
+    var csrftoken = Cookies.get('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    var students_button = $("#students_button");
+    var survey_button = $("#surveys_button");
+    var students = $("#students");
+    var surveys = $("#surveys");
+
+
+    $(students_button).click(function () {
+        students_button.addClass('active');
+        survey_button.removeClass('active');
+        students.css('display', 'inline');
+        surveys.css('display', 'none');
+    })
+
+    $(survey_button).click(function () {
+
+        students_button.removeClass('active');
+        survey_button.addClass('active');
+        students.css('display', 'none');
+        surveys.css('display', 'inline');
+    })
+
+var collapse_student_div = $("#collapse_student_div")
+var open_student_div = $('#add_students_div')
+var search_box = $('#search_box');
+
+open_student_div.on('click', function(){
+    search_box.css('display', '');
+    open_student_div.css('display', 'none');
+    collapse_student_div.css('display', '');
+})
+
+collapse_student_div.on('click',function(){
+    search_box.css('display','none');
+    collapse_student_div.css('display', 'none');
+    open_student_div.css('display', '');
+})
+
+
+
+
+    function get_set_id() {
+        var id = this.id;
+        var url = window.location.pathname.split('/');
+        var set_id = url.pop() || url.pop()
+        return set_id;
+    }
+
+    $(".remove_from_class").each(function () {
+        $(this).on("click", function () {
+            $parentDiv = $(this).closest(".item");
+            var id = this.id;
+            console.log(id)
+            var set_id = get_set_id();
+
+
+            $.ajax({
+                method: 'POST',
+                url: '/ajax/delete_from_class/',
+                data: {
+                    'id': id,
+                    'set_id': set_id,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success == true) {
+                        $parentDiv.remove();
+                        alert("Student successfully removed!");
+
+                    } else if (data.success == false) {
+                        alert("Student wasn't removed!");
+                    } else {
+                        alert("Invalid ID");
+
+                    }
+
+                }
+            })
+        })
+    })
+
+   
+
+    var search_bar = $('#search_bar');
+    var suggested_students = $("#suggested_students");
+
+    search_bar.keyup(function () {
+        var keyword = search_bar.val();
+        if (keyword.length > 2) {
+            $.ajax({
+                method: 'GET',
+                url: '/class/create/',
+                data: {
+                    'keyword': keyword,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    suggested_students.empty();
+                    var suggestions = data.students;
+                    for (i = 0; i < suggestions.length; i++) {
+                        var current_student = suggestions[i];
+                        var div = $("<a href='#'><div/></a>");
+                        div.data("name", current_student[0]);
+                        div.data("id", current_student[2]);
+                        div.html(current_student[0] + " (" + current_student[1]+ ")" + "<br>");
+                        div.addClass('item');
+                        div.on("click", moveProfile);
+                        suggested_students.append(div);
+                    }
+                }
+
+
+            })
+        }
+    })
+
+    var students_to_add = $("#students_to_add")
+    var ids = []
+
+    function moveProfile() {
+        var $this = $(this);
+        var studentID = $this.data("id");
+        if (ids.indexOf(studentID) == -1) {
+            ids.push(studentID);
+            var studentName = $this.data("name");
+            var studentEmail = $this.data("email")
+            var div = $("<div/>");
+            div.data('id', studentID);
+            div.data('name', studentName);
+            div.html("<div>" + studentName + "</div><div><button>Remove</button></div>");
+            div.addClass("item");
+            students_to_add.append(div);
+            clear()
+            //console.log(ids)}
+        } else {
+            clear()
+        }
+    }
+
+
+    function clear() {
+        suggested_students.empty();
+        search_bar.val('');
+    }
+
+
+    $('#students_to_add').on('click', 'button', function () {
+        var $this = $(this).closest('.item');
+        var studentID = $this.data("id");
+        var pos = ids.indexOf(studentID);
+        ids.splice(pos, 1);
+        //console.log(ids);
+        $this.remove();
+    });
+
+
+    $('#add_students').on('click', function () {
+        console.log('hello')
+        $.ajax({
+            method: "POST",
+            url: '/ajax/add_students/',
+            data: {
+                'student_ids': JSON.stringify(ids),
+                'set_id': get_set_id(),
+            },
+            dataType: 'json',
+            success: function (data) {
+                location.reload();
+            }
+        });
+    })
+
+        $('.resend_button').each(function() {
+        $(this).on("click", function(){
+            var form_id = this.id;
+            console.log(form_id);
+
+            $.ajax({
+            method: 'POST',
+            url: '/ajax/resend/',
+            data: {
+            'id': form_id,
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log('surprisingly this worked.')
+            }
+            })
+
+        })
+    });
+</script> {% endblock %}

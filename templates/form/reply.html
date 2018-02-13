@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="width:60%; margin-left:auto; margin-right:auto;padding-bottom:15%">
+        <div class="ui inline nag">
+                <span class="title">
+                    You haven't answered all the questions; please do so and re-submit your answers!
+                </span>
+                <i class="close icon"></i>
+                </div>
+<div style="padding-top: 1%">
+    
+        <div class="form_title">
+            <h2 class="ui center aligned header" style="padding-bottom:1%;">
+              <u>
+              {{ form.title }}
+            </u>
+            </h2>
+          </div>
+    </div>
+    <div class="form_set_date">
+        <h4 class="ui center aligned header">
+    
+            Date Sent: {{ form.date_created }}
+    
+          </h4>
+    </div>
+    <div style="padding-bottom:10%; padding-top:1%;">
+    <div class="ui form segment" style="text-align:center;">
+    {{ form.description }}
+    
+    <div style="padding-bottom:1%">
+    
+    
+    </div>
+    <div class="ui divider"></div>
+    <div id="questions" style="margin-left:auto;margin-right:auto;">
+    
+    {% for question in questions %}
+    <div>
+        <h3 class="ui left floated header" style="position: absolute"><u>{{ question.position }}.</u></h3>
+    
+    <div class="question">
+      
+    
+    <div class="question_text" style="display:flex;justify-content:center;align-items:center;padding-bottom:1%;">
+      
+    <h3>{{ question.question_text }}</h3>
+    </div>
+    
+    <div class="question_stars" style="display:flex;justify-content:center;align-items:center;">
+        <div class="ui star rating massive star_rating" data-max-rating="5">
+          </div>
+        </div>
+    </div>
+    </div>
+    <div class="ui divider"></div>
+    
+    {% endfor %}
+    
+    {% if form.additionalcomment == True %}
+    <div id="comment_div"class="field">
+        <h3>Additional Comments</h3>
+        <textarea id="comment" rows="2"></textarea>
+      </div>
+    <div class="ui divider"></div>
+    {% endif %}
+    
+    <button class="ui green button" id="submit_answers">Submit</button>
+    </div>
+    </div>
+    </div>
+
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $(".rating").rating();
+
+});
+
+var csrftoken = Cookies.get('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+
+var submit = $("#submit_answers");
+
+$(submit).click(function(){
+    var answers = []
+    var error = false;
+    var data = {}    
+  $('.star_rating').each(function(){
+    var x = $(this).rating('get rating');
+
+    answers.push(x);
+  })
+  
+  if ($('#comment_div').length){
+        var comment = $("#comment").val();
+        if(comment==""){
+            error = true;
+        }else{
+            data["comment"] = comment;
+        }
+    }
+
+
+    for(var i = 0; i < answers.length;i++){
+        if(answers[i]==0){
+            error = true;
+        }
+    }
+
+    if(error == true){
+        $('.nag').nag('show')
+;
+    }else{
+
+        answers = JSON.stringify(answers);
+        data["results"] = answers;
+        var url = window.location.pathname;
+        $.ajax({
+        method: "POST",
+        url: url,
+        data: data,
+        dataType: 'json',
+        success: function (data) {
+            location.href = '/profile/';//<--Redirect on success
+        }
+        });
+    }
+
+
+
+})
+
+
+</script>
+
+{% endblock %}

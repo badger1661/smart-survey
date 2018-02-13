@@ -1,0 +1,225 @@
+{% extends 'base.html' %} {% block content %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div style="width: 60%; margin-left:auto; margin-right:auto;padding-bottom:15%">
+    <div id="welcome" style="text-align: center;">
+        <h2>
+            <u>{{ form.title }}'s Responses</u>
+        </h2>
+    </div>
+    <div class="ui two item menu" id="menu">
+        <a class="item active" id='collective_responses_button'>
+            <h3>
+                <u>Collective Responses</u>
+            </h3>
+        </a>
+        <a class="item" id='induvidual_responses_button'>
+            <h3>
+                <u>Induvidual Responses</u>
+            </h3>
+        </a>
+
+    </div>
+    {% if amount_of_responses == 0%}
+    <div style="text-align:center;">
+        <h2>Looks like you havn't had any replies to your form yet</h2>
+    </div>
+    {% else %}
+    <!-- INDUVIDUAL -->
+    <div id="induvidual" style='display: none'>
+        <div class="ui two top attached buttons">
+            <div id="previous" class="ui labeled icon button green disabled">Previous Response
+                <i class="left chevron icon"></i>
+            </div>
+            <div id="next" class="ui right labeled icon button green">Next Response
+                <i class="right chevron icon"></i>
+
+            </div>
+        </div>
+        <div class="ui form attached segment">
+
+            <div id="answers">
+                {% for answer_set in induvidual_answers %}
+                <div class="answer" id="{{ answer_set.0 }}" style="display:none">
+                    {% for answer in answer_set.1 %}
+                    <div>
+                        <h3 class="ui left floated header" style="position: absolute">
+                            <u>{{ answer.position|add:"1"}}.</u>
+                        </h3>
+                        <div class="question">
+                            <div class="question_text" style="display:flex;justify-content:center;align-items:center;padding-bottom:1%;">
+                                <h3>{{ answer.question }}</h3>
+                            </div>
+                            <div class="question_stars" style="display:flex;justify-content:center;align-items:center;">
+                                <div class="ui star rating massive star_rating" data-rating="{{ answer.score }}" data-max-rating="5">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="ui divider"></div>
+
+                    {% endfor %} {% if answer_set.2 %}
+
+                    <div class="question_text" style="display:flex;justify-content:center;align-items:center;padding-bottom:1%;">
+                        <h3>Comment</h3>
+                    </div>
+
+                    <div class="question_text" style="display:flex;justify-content:center;align-items:center;padding-bottom:1%;">
+                        {{ answer_set.2.text }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+    <!-- COLLECTIVE -->
+    <div id="collective" style="margin-left:auto; margin-right:auto">
+        <div class="ui form attached segment">
+
+            {% for question in collective_responses %}
+            <div>
+                <h3 class="ui left floated header" style="position: absolute">
+                    <u>{{ question.0.position|add:"1"}}.</u>
+                </h3>
+                <div class="question_text" style="display:flex;justify-content:center;align-items:center;padding-bottom:1%;">
+                    <h3>{{ question.0.question_text }}</h3>
+                </div>
+
+                <div id="{{ question.0.name }}" style="width: 100%; height: 400px;"></div>
+
+
+                <script type="text/javascript">
+                    google.charts.load('current', { 'packages': ['corechart'] });
+                    google.charts.setOnLoadCallback(drawChart);
+
+                    function drawChart() {
+
+                        var data = google.visualization.arrayToDataTable([
+                            ['Score', 'Amount'],
+                            ['1', {{ question.1.0}}],
+                            ['2', {{ question.1.1}}],
+                            ['3', {{ question.1.2}}],
+                            ['4', {{ question.1.3}}],
+                            ['5', {{ question.1.4}}]
+                            ]);
+
+                    var options = {
+                        height: 400,
+                        legend: {
+                            alignment: 'center',
+                            position: 'top'
+                        }
+                    };
+                    var chart = new google.visualization.PieChart(document.getElementById('{{ question.0.name }}'));
+
+                    chart.draw(data, options);
+          }
+                </script>
+                <div class="ui divider"></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.ui.rating').rating('disable');
+        $("#1").css('display', '');
+
+
+
+
+        var induvidual_responses_button = $("#induvidual_responses_button");
+        var induvidual = $("#induvidual");
+        var collective_responses_button = $("#collective_responses_button");
+        var collective = $("#collective");
+
+        induvidual_responses_button.on('click', function () {
+            induvidual_responses_button.addClass('active')
+            collective_responses_button.removeClass('active')
+            induvidual.css('display', 'inline');
+            collective.css('display', 'none');
+
+        })
+
+        collective_responses_button.on('click', function () {
+            collective_responses_button.addClass('active')
+            induvidual_responses_button.removeClass('active')
+            collective.css('display', 'inline');
+            induvidual.css('display', 'none');
+
+        })
+
+        var answer_counter = 1;
+        var amount_of_answers = '{{amount_of_responses}}';
+
+        if (amount_of_answers - 1 <= 0) {
+            $('#previous').addClass('disabled')
+            $('#next').addClass('disabled')
+
+
+        }
+
+        $("#next").on('click', function () {
+            $('#previous').removeClass('disabled')
+            var previous_id = '#' + answer_counter;
+            var next_id = '#' + (answer_counter + 1);
+            var previous_div = $(previous_id);
+            var next_div = $(next_id);
+
+            next_div.css('display', '');
+            previous_div.css('display', 'none');
+
+            answer_counter++;
+            console.log(answer_counter)
+            console.log('_' + amount_of_answers)
+
+            if (answer_counter >= amount_of_answers) {
+                $(this).addClass('disabled')
+            }
+        })
+
+        $('#previous').on('click', function () {
+
+            $('#next').removeClass('disabled')
+
+            var previous_id = '#' + answer_counter;
+            var next_id = '#' + (answer_counter - 1);
+            var previous_div = $(previous_id);
+            var next_div = $(next_id);
+
+            next_div.css('display', '');
+            previous_div.css('display', 'none');
+
+            answer_counter--;
+            console.log(answer_counter)
+            console.log('_' + amount_of_answers)
+
+            if (answer_counter == 1) {
+                $(this).addClass('disabled')
+            }
+
+        })
+
+    })
+</script> {% endblock %}
+
+
+<!-- 
+
+
+{% for answer_set in answers %}
+    
+    {% for answer in answer_set %}
+    {{ answer }}
+    {% endfor %}<br>
+{% endfor %} -->

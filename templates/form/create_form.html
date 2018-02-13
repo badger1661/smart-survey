@@ -1,0 +1,256 @@
+{% extends 'base.html' %} {% block content %}
+
+<div style="width: 50%; margin-left:auto; margin-right:auto;padding-bottom:15%">
+
+    <div class="ui raised container segment">
+        <div class="ui horizontal divider">Create New Survey</div>
+
+        <div class="ui form segment">
+            <div class="two fields">
+                <div class="field">
+                    <label>Survey Name</label>
+                    <input id="form_name" type="text" placeholder="Form Name" maxlength="50">
+                </div>
+                <div class="field">
+                    <label>Class</label>
+                    <div class="ui selection dropdown" id="set_dropdown">
+                        <input type="hidden" name="set">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">Class</div>
+                        <div class="menu">
+                            {% for set in sets %}
+                            <div class="item" data-value="{{ set.id }}">{{ set.name }}</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </input>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label>Survey Description</label>
+                <textarea id="form_description" rows="2" placeholder="Form Description"></textarea>
+            </div>
+
+            <div class="field">
+                <label>
+                    <b>Questions</b>
+                </label>
+                <div id="question_container">
+                    <div class="field questions">
+                        <input class="question_input" type="text" placeholder="Question">
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <button stlye="float:right" id="add_students" class="ui icon button teal">
+                    <i class="plus icon"></i>
+
+                </button>
+            </div>
+            <div class="field">
+                <div class="ui checkbox">
+                    <label>I want my Students to have an Additional Comments Text Area</label>
+
+                    <input id="additional_comments_checkbox" type="checkbox" tabindex="0" class="hidden">
+                </div>
+            </div>
+            <div class="ui divider"></div>
+            <button class="ui green button" id="submit_form">Submit</button>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var csrftoken = Cookies.get('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    var question_html = '<div class="field questions"><input class="question_input" type="text" placeholder="Question"></div>';
+    var question_container = $("#question_container")
+    var amount_of_questions = 1;
+
+
+    $("#add_students").on('click', function () {
+        if (amount_of_questions < 10) {
+            question_container.append(question_html);
+            amount_of_questions++;
+        } else {
+            alert("You can only have up to 10 questions!");
+        }
+    })
+
+    $("#submit_form").on('click', function () {
+        
+        var form_name = $("#form_name").val();
+        var description = $("#form_description").val();
+        var setID = $('#set_dropdown').dropdown('get value');        
+        var additionalcomments = $("#additional_comments_checkbox").prop("checked");
+        var questions = [];
+
+
+        $(".question_input").each(function () {
+            var question = $(this).val();
+            questions.push(question);
+
+        })
+        var error = false;
+        if (form_name == "") {
+            error = true;
+        }
+
+        if (description == "") {
+            error = true
+        }
+
+        if (setID == "") {
+            error = true
+        }
+
+        for (var i = 0; i < questions.lenght; i++) {
+            if (questions[i] == "") {
+                error = true;
+            }
+        }
+
+        if (error == true) {
+            alert("Please fill out the form correctly and fill all fields in");
+
+
+        } else {
+            questions = JSON.stringify(questions);
+            var url = window.location.pathname;
+            $.ajax({
+                method: "POST",
+                url: url,
+                data: {
+                    'title': form_name,
+                    'description': description,
+                    'questions': questions,
+                    'comments': additionalcomments,
+                    'setid': setID,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data.url);
+                    location.href = data.url;//<--Redirect on success
+                }
+            });
+        }
+    });
+
+function get_value(){
+
+    $('#set_dropdown').dropdown();    
+    var setID = $('#set_dropdown').dropdown('get value');
+    //console.log(setID)   
+    return setID 
+}
+
+
+</script> {% endblock %}
+
+
+
+
+
+
+
+<!-- <h3>Title</h3>
+    
+
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script type="text/javascript">
+
+//Taken from Django Docs
+var csrftoken = Cookies.get('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+var question_form = '<div class="question"><label>Question: </label><input type="text" class="question_text"/>'
+
+//Builds the questions
+
+$(document).ready(function() {
+
+    //Adds questions one after another.
+    var placeholder = $("#questions"); 
+    var add_button = $("#newquestion"); 
+    $(placeholder).append(question_form);
+
+    var amount = 1;
+    $(add_button).click(function(e){ 
+        if(amount != 10){
+            console.log(amount)
+            e.preventDefault();
+            $(placeholder).append(question_form);
+            amount++;
+        }else{
+            console.log('You can only have 10 questions')
+            }   
+    });
+
+    var button = $("#send");
+
+    $(button).click(function() {
+        var title = $('#title').val();
+        var description = $('#description').val();
+        var checkbox = $('#additionalcomments').prop("checked");
+        var setid = $('#set').val();
+        var vals = [];
+        $("#questions :input").each(function(index) {
+            vals.push($(this).val());
+            })
+        
+        vals = JSON.stringify(vals);
+        
+        var url = window.location.pathname;
+        $.ajax({
+            method: "POST",
+            url: url,
+            data: {
+                'title': title,
+                'description': description,
+                'questions': vals,
+                'comments': checkbox,
+                'setid': setid,
+                },
+            dataType: 'json',
+            success: function (data) {
+                //location.href = data.url;//<--Redirect on success
+            }
+            });
+        });
+
+});
+
+
+
+</script> -->
