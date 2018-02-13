@@ -99,12 +99,12 @@
                     function drawChart() {
 
                         var data = google.visualization.arrayToDataTable([
-                            ['Score', 'Amount'],
-                            ['1', {{ question.1.0}}],
-                            ['2', {{ question.1.1}}],
-                            ['3', {{ question.1.2}}],
-                            ['4', {{ question.1.3}}],
-                            ['5', {{ question.1.4}}]
+                            ['Rating', 'Amount'],
+                            ['Very Poor', {{ question.1.0}}],
+                            ['Poor', {{ question.1.1}}],
+                            ['Average', {{ question.1.2}}],
+                            ['Good', {{ question.1.3}}],
+                            ['Very Good', {{ question.1.4}}]
                             ]);
 
                     var options = {
