@@ -143,8 +143,12 @@ $(compare_button).click(function(){
 
     })
     if(checked_ids.length != 2){
-          alert('Please select 2 Surveys to compare!\n This feature is still in development and should be released by 18/02/2018.')
+          alert('Please select exactly 2 Surveys to compare!')
         }
+    else{
+      var url = '/form/compare/' + checked_ids[0] + '/' + checked_ids[1];
+      location.href = url;
+    }
 })
 
 $(submit).click(function(){

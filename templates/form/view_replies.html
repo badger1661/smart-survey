@@ -95,30 +95,26 @@
                 <script type="text/javascript">
                     google.charts.load('current', { 'packages': ['corechart'] });
                     google.charts.setOnLoadCallback(drawChart);
-
                     function drawChart() {
-
                         var data = google.visualization.arrayToDataTable([
                             ['Rating', 'Amount'],
-                            ['Very Poor', {{ question.1.0}}],
-                            ['Poor', {{ question.1.1}}],
-                            ['Average', {{ question.1.2}}],
-                            ['Good', {{ question.1.3}}],
-                            ['Very Good', {{ question.1.4}}]
+                            ['Very Poor', {{ question.1.0 }}],
+                            ['Poor', {{ question.1.1 }}],
+                            ['Average', {{ question.1.2 }}],
+                            ['Good', {{ question.1.3 }}],
+                            ['Very Good', {{ question.1.4 }}],
                             ]);
-
                     var options = {
                         height: 400,
                         legend: {
                             alignment: 'center',
                             position: 'top'
                         }
-                        //slices: {0: {color: 'RED'}, 1:{color: 'FUCHSIA'}, 2:{color: 'LIME'}, 3: {color: 'AQUA'}, 4:{color: 'GREEN'}}
-                    };
-                    var chart = new google.visualization.PieChart(document.getElementById('{{ question.0.name }}'));
+                    }
 
+                    var chart = new google.visualization.PieChart(document.getElementById('{{ question.0.name }}'));
                     chart.draw(data, options);
-          }
+                    }
                 </script>
                 <div class="ui divider"></div>
             </div>

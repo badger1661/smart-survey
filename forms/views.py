@@ -333,7 +333,7 @@ def compare_form(request, form_one = None, form_two = None):
 
     #
     for question in range(len(questions)):
-        questions[question].position = question + 1
+        questions[question].position = question
         #USED FOR CHAT IDS
         questions[question].name = chr(question + 65)
 

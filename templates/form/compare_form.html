@@ -4,16 +4,23 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <div style="width: 60%; margin-left:auto; margin-right:auto;padding-bottom:15%">
 {% for question in responses %}
-        
+<div>
+        <h3 class="ui left floated header" style="position: absolute">
+            <u>{{ question.0.position|add:"1"}}.</u>
+        </h3>
+        <div class="question_text" style="display:flex;justify-content:center;align-items:center;padding-bottom:1%;">
+            <h3>{{ question.0.question_text }}</h3>
+        </div>       
+        <br>
 
-        <div id="{{ question.0.name }}" ></div>
+        <div id="{{ question.0.name }}" style="height: 400px;"></div>
         <script type="text/javascript">
             google.charts.load('current', {'packages':['bar']});
             google.charts.setOnLoadCallback(drawChart);
       
             function drawChart() {
               var data = google.visualization.arrayToDataTable([
-                ['Rating', 'Form sent {{form_one.date_created}} ', 'Form sent {{form_two.date_created}} '],
+                ['Rating', 'Survey sent {{form_one.date_created}} ', 'Survey sent {{form_two.date_created}} '],
                 ['Very Poor', {{ question.1.0.0}}, {{ question.1.1.0}}],
                 ['Poor', {{ question.1.0.1}}, {{ question.1.1.1}}],
                 ['Average', {{ question.1.0.2}}, {{ question.1.1.2}}],
@@ -23,11 +30,12 @@
               ]);
       
               var options = {
-                height: 400,  
+                height: 400,   
                 legend: {
                             alignment: 'center',
                             position: 'top'
-                        }                
+                        },
+                        theme: 'material'
               };
       
               var chart = new google.charts.Bar(document.getElementById('{{ question.0.name }}'));
@@ -36,8 +44,9 @@
             }
           </script>
 
+<div class="ui divider"></div>
 
-
+</div>
 {% endfor %}
 </div>
 {% endblock %}
