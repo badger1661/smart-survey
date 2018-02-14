@@ -21,7 +21,7 @@ from django.contrib.auth import views as auth_views
 import logging
 logger = logging.getLogger(__name__)
 #from reviews.views import create_review, add_questions, view_review, reply
-from forms.views import create_form, view_form, reply, view_replies, resend_form, compare_form
+from forms.views import create_form, view_form, reply, view_replies, resend_form, compare_form, remind
 from users.views import student_registration, teacher_registration, profile, activate, view_set, create_set, delete_from_class, add_students, confirm_teacher
 #from users import models as user_models
 
@@ -58,4 +58,6 @@ urlpatterns = [
     url(r'^ajax/delete_from_class/$', delete_from_class, name = 'delete_from_class'),
     url(r'^ajax/add_students/$', add_students, name = 'add_students'),
     url(r'^ajax/confirm/$', confirm_teacher, name = 'add_students'),
+    url(r'^ajax/reminder/$', remind, name = 'remind'),
+    
 ]

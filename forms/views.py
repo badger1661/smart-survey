@@ -4,6 +4,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
 
 from .models import Form, Question, AdditionalComment, Answer
 from users.models import Set
@@ -104,7 +106,7 @@ def view_form(request, form_id=None):
 
         #FIND OUT HOW MANY RESPONSES
         new_forms = []
-        form_set_amount = form_.setID.amount_of_students()
+        
 
         #LOAD QUESTIONS INTO A PYTHON LIST FROM JSON DICTIONARY
         question = json.loads(form_.questions)
@@ -153,17 +155,18 @@ def view_replies(request, form_id = None):
 
     set_sent_to = form.setID
     students = set_sent_to.students.all()
-
     #GET INDUVIDUAL RESPONSES
     induvidual_answers = []
+    replied = []
 
     #GET STUDENTS ANSWERS AND ADDITIONALCOMMENT IF IT EXISTS AND PUT IT INTO A LIST
     for student in range(len(students)):
-
         answers_ = Answer.objects.filter(form = form, student = students[student]).order_by("position")
         answers_with_question = []
 
         if len(answers_) > 0:
+            replied.append(students[student])
+            
             for ans_ in range(len(answers_)):
                 a = answers_[ans_]
                 a.question = questions[ans_]
@@ -178,6 +181,11 @@ def view_replies(request, form_id = None):
                 except ObjectDoesNotExist:
                     pass
             induvidual_answers.append(ans)
+
+    not_replied = []
+    for student in students:
+        if student not in replied:
+            not_replied.append(student)
 
     ##ASIGN APPROPRIATE ID FOR TEMPLATE RENDERING
     for a in range(len(induvidual_answers)):
@@ -217,6 +225,8 @@ def view_replies(request, form_id = None):
             'induvidual_answers': induvidual_answers,
             'collective_responses': collective_responses,
             'amount_of_responses': len(induvidual_answers),
+            'replied': replied,
+            'not_replied': not_replied,
     }
 
     return render(request, 'form/view_replies.html', args)
@@ -390,3 +400,34 @@ def resend_form(request):
     new_form.save()
     
     return JsonResponse({})
+
+def remind(request):
+    ids = request.POST.get('ids', None)
+    ids = json.loads(ids)
+    ids = [int(id_) for id_ in ids]
+    form_id = request.POST.get('form_id', None)
+
+    try:
+        form = Form.objects.get(pk = form_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': True,})
+
+    emails = []
+    for id_ in ids:
+        try:
+            student = get_user_model().objects.get(pk = id_).email
+            emails.append(student)
+        except ObjectDoesNotExist:
+            pass
+    
+    current_site = get_current_site(request)
+    subject = 'Activate your SmartSurvey account'
+    message = render_to_string('email/surveys_pending.html', {
+        'domain': current_site.domain,
+        },
+        emails
+        )
+    send_mass_mail(message)
+    
+    return JsonResponse({})
+    

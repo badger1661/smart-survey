@@ -149,27 +149,6 @@ def confirm_teacher(request):
     args = {}
     return JsonResponse(args)
 
-# class confirm_teacher(LoginRequiredMixin, View):
-#     login_url = '/login/'
-#     template_name = 'users/confirm_teachers.html'
-
-#     def get(self, request):
-#         #Change to school admin
-#         school = School.objects.get(school_name = request.user.Teacher.school.school_name)
-#         school_teachers = Teacher.objects.filter(school = school, verified = False)
-
-#         for teacher in school_teachers:
-#             if teacher.user.email_confirmed == False:
-#                 user = teacher.user
-#                 school_teachers = school_teachers.exclude(user = user)
-
-#         print(school_teachers)
-#         args = {'teachers': school_teachers}
-#         return render(request, self.template_name, args)
-
-#     def post(self, request):
-        
-
 class create_set(LoginRequiredMixin, View):
     login_url = '/login/'
     template_name = 'users/create_set.html'
