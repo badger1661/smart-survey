@@ -363,7 +363,7 @@ def compare_form(request, form_one = None, form_two = None):
         to_append.append(ratings)
     
         responses.append(to_append)
-    
+    print(responses)
     args = {
             'form_one': form_one,
             'form_two': form_two,
