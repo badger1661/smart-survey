@@ -299,6 +299,78 @@ class reply(LoginRequiredMixin, View):
         
         return JsonResponse({})
 
+def compare_form(request, form_one = None, form_two = None):
+    user = request.user
+    try:
+        form_one = Form.objects.get(pk = form_one)
+        form_two = Form.objects.get(pk = form_two)
+    except ObjectDoesNotExist:
+        return HttpResponse("<html><body>One or both of those surveys don't exit!</body></html>")
+
+    if (form_one.teacher or form_two.each) != user:
+        return HttpResponse("<html><body>One or both of those surveys weren't created by you!</body></html>")
+
+    if form_one.duplicate == True and form_two.duplicate == True:
+        if form_one.parent != form_two.parent:
+            return HttpResponse("<html><body>These surveys aren't identical!</body></html>")
+    elif form_one.duplicate == False:
+        if form_two.parent != form_one:
+            return HttpResponse("<html><body>These surveys aren't identical!</body></html>")
+    elif form_two.duplicate == False:
+        if form_one.parent != form_one:
+            return HttpResponse("<html><body>These surveys aren't identical!</body></html>")
+    else:
+        return HttpResponse("<html><body>These surveys aren't identical!</body></html>")
+
+    forms = [form_one, form_two]
+    questions = []
+    question_ids =  json.loads(form_one.questions)
+    
+    #GET QUESTIONS FROM A LIST OF IDS
+    for id_ in question_ids:
+        question = Question.objects.get(pk = id_)
+        questions.append(question)
+
+    #
+    for question in range(len(questions)):
+        questions[question].position = question + 1
+        #USED FOR CHAT IDS
+        questions[question].name = chr(question + 65)
+
+    responses = []
+
+    for question in questions:
+        to_append = [question]
+        ratings = []
+        for form in forms:
+            
+            answers = Answer.objects.filter(form=form, position = question.position)
+            scores = {1: 0,
+                      2: 0,
+                      3: 0,
+                      4: 0,
+                      5: 0}
+            for answer in answers:    
+                if answer.score in scores:
+                    scores[answer.score] += 1
+                else:
+                    scores[answer.score] = 1
+            
+            scores = [scores[1], scores[2], scores[3], scores[4], scores[5]]
+
+            ratings.append(scores)
+            
+        to_append.append(ratings)
+    
+        responses.append(to_append)
+    
+    args = {
+            'form_one': form_one,
+            'form_two': form_two,
+            'responses': responses,
+    }
+
+    return render(request, 'form/compare_form.html', args)
 
 def resend_form(request):
     form_id = request.POST.get('id', None)

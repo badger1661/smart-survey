@@ -21,7 +21,7 @@ from django.contrib.auth import views as auth_views
 import logging
 logger = logging.getLogger(__name__)
 #from reviews.views import create_review, add_questions, view_review, reply
-from forms.views import create_form, view_form, reply, view_replies, resend_form
+from forms.views import create_form, view_form, reply, view_replies, resend_form, compare_form
 from users.views import student_registration, teacher_registration, profile, activate, view_set, create_set, delete_from_class, add_students, confirm_teacher
 #from users import models as user_models
 
@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^form/(?P<form_id>\d+)/$', view_form, name = 'view_form'),
     url(r'^form/(?P<form_id>\d+)/reply/$', reply.as_view(), name = 'reply'),
     url(r'^form/(?P<form_id>\d+)/view_replies/$', view_replies, name = 'view_replies'),
+    url(r'^form/compare/(\d+)/(\d+)/$', compare_form, name = 'compare_form'),    
 
     #USERS
     url(r'^signup/$', TemplateView.as_view(template_name='users/signup.html')),

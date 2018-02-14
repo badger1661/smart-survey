@@ -10,6 +10,8 @@
 
 
     <!-- SURVEYS -->
+
+    {% if teacher.verified == True %}
     <div id='surveys'>
             <div class="item">
                     <div class="content">
@@ -79,7 +81,15 @@
             {% endfor %}
         </div>
     </div>
-
+    {% else %}
+    <div id="not_verified" style="text-align: center;">
+            <h4>
+                <u>Please confirm your email and wait for the school to verify you are a teacher before using your account.</u>
+            </h4>
+        </div>
+    {% endif %}
+</div>
+    
 
 <script type="text/javascript">
 

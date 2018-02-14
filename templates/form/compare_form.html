@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<div style="width: 60%; margin-left:auto; margin-right:auto;padding-bottom:15%">
+{% for question in responses %}
+        
+
+        <div id="{{ question.0.name }}" style="width: 800px; height: 500px;"></div>
+        <script type="text/javascript">
+            google.charts.load('current', {'packages':['bar']});
+            google.charts.setOnLoadCallback(drawChart);
+      
+            function drawChart() {
+              var data = google.visualization.arrayToDataTable([
+                ['Rating', 'Form sent {{form_one.date_created}} ', 'Form sent {{form_two.date_created}} '],
+                ['Very Poor', {{ question.1.0}}, {{ question.2.0}}],
+                ['Poor', {{ question.1.1}}, {{ question.2.1}}],
+                ['Average', {{ question.1.2}}, {{ question.2.2}}],
+                ['Good', {{ question.1.3}}, {{ question.2.3}}],
+                ['Very Good', {{ question.1.4}}, {{ question.2.4}}]
+                
+              ]);
+      
+              var options = {
+                height: 400,                  
+              };
+      
+              var chart = new google.charts.Bar(document.getElementById('{{ question.0.name }}'));
+      
+              chart.draw(data, options);
+            }
+          </script>
+
+
+
+{% endfor %}
+</div>
+{% endblock %}
