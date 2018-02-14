@@ -6,6 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
 
 from .models import Form, Question, AdditionalComment, Answer
 from users.models import Set
@@ -428,6 +430,6 @@ def remind(request):
         emails
         )
     send_mass_mail(message)
-    
+
     return JsonResponse({})
     
