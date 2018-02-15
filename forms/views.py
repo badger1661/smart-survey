@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mass_mail
+from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 
@@ -414,22 +414,22 @@ def remind(request):
     except ObjectDoesNotExist:
         return JsonResponse({'error': True,})
 
-    emails = []
+    students = []
     for id_ in ids:
         try:
-            student = get_user_model().objects.get(pk = id_).email
-            emails.append(student)
+            student = get_user_model().objects.get(pk = id_)
+            students.append(student)
         except ObjectDoesNotExist:
             pass
-    
-    current_site = get_current_site(request)
-    subject = 'Activate your SmartSurvey account'
-    message = render_to_string('email/surveys_pending.html', {
-        'domain': current_site.domain,
-        },
-        emails
-        )
-    send_mass_mail(message)
+
+    for user in students:
+        current_site = get_current_site(request)
+        subject = 'SmartSurvey: You have a Survey that is unanswered'
+        message = render_to_string('email/surveys_pending.html', {
+                                    'domain': current_site.domain,
+                                    'link': form.answer_form(),}
+                                    )
+        user.email_user(subject, message)
+
 
     return JsonResponse({})
-    

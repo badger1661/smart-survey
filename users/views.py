@@ -7,6 +7,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from .tokens import account_activation_token
 from .tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import six
 from django.contrib.auth import login
