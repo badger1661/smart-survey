@@ -221,7 +221,6 @@ def view_replies(request, form_id = None):
         to_append.append(scores)
         collective_responses.append(to_append)
     
-    #print(collective_responses)
 
     args = {'form': form,
             'induvidual_answers': induvidual_answers,
@@ -375,7 +374,6 @@ def compare_form(request, form_one = None, form_two = None):
         to_append.append(ratings)
     
         responses.append(to_append)
-    print(responses)
     args = {
             'form_one': form_one,
             'form_two': form_two,
