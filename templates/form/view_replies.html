@@ -196,15 +196,38 @@
     {% endif %}
 </div>
 <!-- END WHO RESPONDED -->
+<br>
+<button id="delete_button" class="ui right floated small negative button">Delete Survey</button>
+
+<div class="ui basic modal" id="delete_modal">
+    <div class="ui raised text container segment center aligned">
+
+      <div class="ui horizontal divider">Delete Form</div>
+      <div class="ui form segment">
+        <h2>
+          <font color="black">Are you sure you want to delete {{ form.title }}</font>
+        </h2>
+
+          <button id='confirm_delete' class="ui primary button large">
+            Yes, I am sure
+          </button>
+
+
+      </div>
+    </div>
+  </div>
+
 </div>
 
 
 
 <script type="text/javascript">
     $(document).ready(function () {
+  $('#delete_modal').modal('attach events', '#delete_button', 'show');
+        
         $('.ui.rating').rating('disable');
         $("#1").css('display', '');
-
+    
         var csrftoken = Cookies.get('csrftoken');
 
         function csrfSafeMethod(method) {
@@ -219,7 +242,24 @@
             }
         });
 
+        var confirm_delete = $('#confirm_delete');
 
+        confirm_delete.on('click', function(){
+            var form_id = '{{ form.id }}';
+
+            $.ajax({
+            method: 'POST',
+            url: '/ajax/delete_survey/',
+            data: {
+            'id': form_id,
+            },
+            dataType: 'json',
+            success: function (data) {
+                location.href = '/profile/';
+            }
+            })
+        })
+        
         var induvidual_responses_button = $("#induvidual_responses_button");
         var induvidual = $("#induvidual");
         var collective_responses_button = $("#collective_responses_button");
@@ -339,14 +379,3 @@
 
     })
 </script> {% endblock %}
-
-
-<!-- 
-
-
-{% for answer_set in answers %}
-    
-    {% for answer in answer_set %}
-    {{ answer }}
-    {% endfor %}<br>
-{% endfor %} -->

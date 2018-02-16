@@ -64,12 +64,3 @@ class Answer(models.Model):
         student = self.student.get_full_name()
         position = self.position
         return "{} | {} | {}".format(form, student, position)
-# class Answer(models.Model):
-#     student = ForeignKey(get_user_model(), on_delete = models.CASCADE)
-#     form = ForeignKey('Form', on_delete = models.CASCADE)
-#     date_created = DateTimeField(auto_now = False, auto_now_add = True)
-
-# class Score(models.model):
-#     position = IntegerField()
-#     score = IntegerField()
-#     Answer = ForeignKey('')s

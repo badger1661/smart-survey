@@ -121,8 +121,52 @@
         </div>
     </div>
     <!--  SURVEYS END -->
+    <br>
+    
+    <button id="delete_button" class="ui right floated small negative button">Delete Set</button>
+    <button id="rename_button" class="ui right floated small primary button">Rename Set</button>
+    
+    <div class="ui basic modal" id="delete_modal">
+        <div class="ui raised text container segment center aligned">
+    
+          <div class="ui horizontal divider">Delete Set</div>
+          <div class="ui form segment">
+            <h2>
+              <font color="black">Are you sure you want to delete {{ set.name }}</font>
+            </h2>
+    
+              <button id='confirm_delete' class="ui primary button large">
+                Yes, I am sure
+              </button>
+    
+    
+          </div>
+        </div>
+      </div>
+
+      <div class="ui basic modal" id="rename_modal">
+        <div class="ui raised text container segment center aligned">
+    
+          <div class="ui horizontal divider">Rename Set</div>
+          <div class="ui form segment">
+            <h2>
+              <font color="black">What do you want to rename {{ set.name }} to?</font>
+            </h2>
+            <div class="ui input">
+                <input type="text" id='new_name' placeholder="New Name">
+              </div>
+              <button id='confirm_rename' class="ui primary button large">
+                Rename
+              </button>
+    
+    
+          </div>
+        </div>
+      </div>
+
 </div>
 <script type="text/javascript">
+$(document).ready(function () {
     var csrftoken = Cookies.get('csrftoken');
 
     function csrfSafeMethod(method) {
@@ -136,6 +180,51 @@
             }
         }
     });
+    
+    $('#delete_modal').modal('attach events', '#delete_button', 'show');
+    $('#rename_modal').modal('attach events', '#rename_button', 'show');
+
+    var confirm_delete = $('#confirm_delete');
+
+    confirm_delete.on('click', function(){
+    var set_id = '{{ set.id }}';
+
+    $.ajax({
+    method: 'POST',
+    url: '/ajax/delete_set/',
+    data: {
+    'id': set_id,
+    },
+    dataType: 'json',
+    success: function (data) {
+        location.href = '/profile/';
+    }
+    })
+})
+
+    var confirm_rename = $('#confirm_rename');
+
+    confirm_rename.on('click', function(){
+        var new_name = $('#new_name').val();
+        var set_id = '{{ set.id }}';
+
+        if(new_name.length > 0){
+            $.ajax({
+        method: 'POST',
+        url: '/ajax/rename_set/',
+        data: {
+        'id': set_id,
+        'name': new_name,
+        },
+        dataType: 'json',
+        success: function (data) {
+            location.reload()
+        }
+        })
+        }
+        console.log(new_name);
+    })
+
 
     var students_button = $("#students_button");
     var survey_button = $("#surveys_button");
@@ -327,4 +416,6 @@ collapse_student_div.on('click',function(){
 
         })
     });
+
+})
 </script> {% endblock %}

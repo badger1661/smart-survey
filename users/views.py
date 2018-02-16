@@ -276,7 +276,6 @@ def profile(request):
     user = request.user
     
     args = {'user': user}
-    print(user.is_teacher())
 
     logger.debug(user.is_teacher())
 
@@ -329,3 +328,22 @@ def profile(request):
 
     else:
         return HttpResponse("<html><body>No profile for you</body></html>")
+
+
+def delete_set(request):
+    set_id = request.POST.get('id', None)
+    set_ = Set.objects.get(pk = set_id)
+    
+    set_.delete()
+    return JsonResponse({})
+
+def rename_set(request):
+    set_id = request.POST.get('id', None)
+    new_name = request.POST.get('name', None)
+    
+    set_ = Set.objects.get(pk = set_id)
+    set_.name = new_name
+
+    set_.save()
+
+    return JsonResponse({})

@@ -433,3 +433,12 @@ def remind(request):
 
 
     return JsonResponse({})
+
+def delete_survey(request):
+    form_id = request.POST.get('id', None)
+    form = Form.objects.get(pk = form_id)
+    
+    form.delete()
+
+    return JsonResponse({})
+    
