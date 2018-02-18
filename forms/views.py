@@ -288,11 +288,13 @@ class reply(LoginRequiredMixin, View):
             return HttpResponse("<html><body>You have already replied to this form</body></html>")
         form = Form.objects.get(pk = form_id)
 
+        #gets the answers entered on the front end
         answers = request.POST.get('results', None)
         answers = json.loads(answers)
         if form.additionalcomment == True:
             comment = request.POST.get('comment')
 
+        #saves each answer
         answers = [int(answer) for answer in answers]
         for i in range(0, len(answers)):
             answer = Answer(form = form,
@@ -301,7 +303,7 @@ class reply(LoginRequiredMixin, View):
                             score = answers[i],
                             )
             answer.save()
-       # SORT OUT ADDING THE COMMENTS
+       # SORT OUT ADDING THE COMMENTS if needed
         if form.additionalcomment == True:
             additionalcomment = AdditionalComment(text = comment,
                                                   form = form,
@@ -312,13 +314,15 @@ class reply(LoginRequiredMixin, View):
 
 def compare_form(request, form_one = None, form_two = None):
     user = request.user
+    #checks if the forms exist
     try:
         form_one = Form.objects.get(pk = form_one)
         form_two = Form.objects.get(pk = form_two)
     except ObjectDoesNotExist:
         return HttpResponse("<html><body>One or both of those surveys don't exit!</body></html>")
 
-    if (form_one.teacher or form_two.each) != user:
+    #check that the forms match each other.
+    if (form_one.teacher or form_two.teacher) != user:
         return HttpResponse("<html><body>One or both of those surveys weren't created by you!</body></html>")
 
     if form_one.duplicate == True and form_two.duplicate == True:
@@ -349,12 +353,12 @@ def compare_form(request, form_one = None, form_two = None):
         questions[question].name = chr(question + 65)
 
     responses = []
-
+    #get all the questions in a list of lists with their scores
     for question in questions:
         to_append = [question]
         ratings = []
         for form in forms:
-            
+            #calculates the total amount of each score
             answers = Answer.objects.filter(form=form, position = question.position)
             scores = {1: 0,
                       2: 0,
@@ -374,6 +378,7 @@ def compare_form(request, form_one = None, form_two = None):
         to_append.append(ratings)
     
         responses.append(to_append)
+
     args = {
             'form_one': form_one,
             'form_two': form_two,
@@ -383,6 +388,7 @@ def compare_form(request, form_one = None, form_two = None):
     return render(request, 'form/compare_form.html', args)
 
 def resend_form(request):
+    #gets form
     form_id = request.POST.get('id', None)
     form = Form.objects.get(pk = form_id)
     
@@ -402,16 +408,19 @@ def resend_form(request):
     return JsonResponse({})
 
 def remind(request):
+    #Gets ids of students that haven't responded
     ids = request.POST.get('ids', None)
     ids = json.loads(ids)
     ids = [int(id_) for id_ in ids]
     form_id = request.POST.get('form_id', None)
 
+    #checks the target form exists
     try:
         form = Form.objects.get(pk = form_id)
     except ObjectDoesNotExist:
         return JsonResponse({'error': True,})
 
+    #Gets user objects for each of the students
     students = []
     for id_ in ids:
         try:
@@ -419,7 +428,7 @@ def remind(request):
             students.append(student)
         except ObjectDoesNotExist:
             pass
-
+    #sends an email to each user with a link to the survey
     for user in students:
         current_site = get_current_site(request)
         subject = 'SmartSurvey: You have a Survey that is unanswered'
@@ -433,6 +442,7 @@ def remind(request):
     return JsonResponse({})
 
 def delete_survey(request):
+    #gets survey and deletes it
     form_id = request.POST.get('id', None)
     form = Form.objects.get(pk = form_id)
     

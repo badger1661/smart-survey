@@ -231,15 +231,18 @@ def view_set(request, set_id):
     return render(request, 'users/view_set.html', args)
 
 def add_students(request):
+    #Gets set ID and student ids
     student_ids = request.POST.get('student_ids', None)
     student_ids = json.loads(student_ids)
     set_id = request.POST.get('set_id', None)
 
+    #gets set object
     try:
         set_ = Set.objects.get(pk = set_id)
     except ObjectDoesNotExist:
         return JsonResponse({})
 
+    #adds students
     for id_ in student_ids:
         try:
             user = get_user_model().objects.get(pk = id_)
@@ -253,9 +256,11 @@ def add_students(request):
 
 @login_required(login_url='/login/')
 def delete_from_class(request):
+    #gets student and set id
     student_id = request.POST.get('id', None)
     set_id = request.POST.get('set_id')
 
+    #Deletes student
     try:
         student = get_user_model().objects.get(pk = student_id)
         set_ = Set.objects.get(pk = set_id)
@@ -271,6 +276,7 @@ def delete_from_class(request):
 
 
 @login_required(login_url='/login/')
+
 def profile(request):
     #Gets the user
     user = request.user
@@ -285,6 +291,8 @@ def profile(request):
         forms = Form.objects.filter(teacher = user, duplicate = False)
         sets = Set.objects.filter(teacher = user)
         new_form_list = []
+        
+        #check how many times each form has been send
         for form in forms:
             resends = Form.objects.filter(parent = form)
             form.times_sent = len(resends) + 1
@@ -297,6 +305,7 @@ def profile(request):
         return render(request, 'users/teacher_profile.html', args)
     
     elif user.is_student():
+        #gets students sets and forms that they havent replied to
         student = Student.objects.get(user = user)
         sets = Set.objects.filter(students__id=user.id)
         forms = []
@@ -312,6 +321,7 @@ def profile(request):
         return render(request, 'users/student_profile.html', args)
 
     elif user.is_admin():
+        #Gets teachers that have confirmed their email but aren't confirmed as teachers.
         admin_object = SchoolAdmin.objects.get(user = user)
         school = School.objects.get(school_name = admin_object.school.school_name)
         school_teachers = Teacher.objects.filter(school = school, verified = False)
@@ -331,6 +341,7 @@ def profile(request):
 
 
 def delete_set(request):
+    #gets set and deletets it
     set_id = request.POST.get('id', None)
     set_ = Set.objects.get(pk = set_id)
     
@@ -338,6 +349,7 @@ def delete_set(request):
     return JsonResponse({})
 
 def rename_set(request):
+    #gets set and new name and renames set
     set_id = request.POST.get('id', None)
     new_name = request.POST.get('name', None)
     
