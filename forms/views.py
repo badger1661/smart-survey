@@ -438,7 +438,6 @@ def remind(request):
                                     )
         user.email_user(subject, message)
 
-
     return JsonResponse({})
 
 def delete_survey(request):
