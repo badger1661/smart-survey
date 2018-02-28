@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
+from django.views.generic import RedirectView
 
 import logging
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ from users.views import student_registration, teacher_registration, profile, act
 #from users import models as user_models
 
 urlpatterns = [
-
+    #HOME PAGE
     url(r'^$', TemplateView.as_view(template_name='home/home.html')),  
 
     #AUTH
@@ -34,6 +35,11 @@ urlpatterns = [
     url(r'^login/$', auth_views.login, {'template_name': 'users/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
 
+    #PASSWORD RESET
+    url(r'^password_reset/$', auth_views.password_reset, name='password_reset'),
+    url(r'^password_reset/done/$', auth_views.password_reset_done, name='password_reset_done'),
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', auth_views.password_reset_confirm, name='password_reset_confirm'),
+    url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
     #FORMS
     url(r'^form/create/$', create_form.as_view(), name = 'create_form'),
     url(r'^form/(?P<form_id>\d+)/$', view_form, name = 'view_form'),
