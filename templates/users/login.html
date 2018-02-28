@@ -12,6 +12,8 @@
               <div class="required field">
                   {{ form.password.label }} {{ form.password }} {{ form.password.errors }}
               </div>
+  {{ form.non_field_errors }}
+              
               <button class="ui primary submit button" name="submit_button" id="submit_button" type="submit">Login</button><br>
               
             Forgot your password? Click <a href='/password_reset/'>here</a>.
@@ -23,5 +25,7 @@
             Haven't signed up yet? <a href="/signup/">Signup here</a> instead.
           </div>
   </div>
+
+
 
 {% endblock %}
