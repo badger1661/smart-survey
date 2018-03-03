@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %} {% block content %}
 
 <div style="width: 60%; margin-left:auto; margin-right:auto;padding-bottom:15%">
@@ -26,10 +27,10 @@
     <div id="students">
         <div class="item">
             <div class="content">
-                <!-- <button id="add_students_div" class="ui labeled icon button green">
+                <button id="add_students_div" class="ui labeled icon button green">
                     <i class="inverted plus icon"></i>
                     Add Students
-                </button> -->
+                </button>
                 <button id="collapse_student_div" class="ui labeled icon button negative" style="display:none">
                         <i class="inverted minus icon"></i>
                         Collapse
@@ -61,10 +62,10 @@
                     {% for student in students %}
                     <div class="item" id="{{ student.id }}_div">
 
-                        <!-- <div class="right floated content">
+                        <div class="right floated content">
                             <div class="negative ui button compact remove_from_class" id="{{ student.id }}">Remove from Class</div>
 
-                        </div> -->
+                        </div>
 
                         <i class="large user icon middle aligned icon"></i>
                         <div class="content">
@@ -123,8 +124,8 @@
     <!--  SURVEYS END -->
     <br>
     
-    <button id="delete_button" class="ui right floated small negative button">Delete Class</button>
-    <button id="rename_button" class="ui right floated small primary button">Rename Class</button>
+    <button id="delete_button" class="ui right floated small negative button">Delete Set</button>
+    <button id="rename_button" class="ui right floated small primary button">Rename Set</button>
     
     <div class="ui basic modal" id="delete_modal">
         <div class="ui raised text container segment center aligned">
@@ -147,7 +148,7 @@
       <div class="ui basic modal" id="rename_modal">
         <div class="ui raised text container segment center aligned">
     
-          <div class="ui horizontal divider">Rename Class</div>
+          <div class="ui horizontal divider">Rename Set</div>
           <div class="ui form segment">
             <h2>
               <font color="black">What do you want to rename {{ set.name }} to?</font>
@@ -168,7 +169,6 @@
 <script type="text/javascript">
 $(document).ready(function () {
     var csrftoken = Cookies.get('csrftoken');
-
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -183,12 +183,9 @@ $(document).ready(function () {
     
     $('#delete_modal').modal('attach events', '#delete_button', 'show');
     $('#rename_modal').modal('attach events', '#rename_button', 'show');
-
     var confirm_delete = $('#confirm_delete');
-
     confirm_delete.on('click', function(){
     var set_id = '{{ set.id }}';
-
     $.ajax({
     method: 'POST',
     url: '/ajax/delete_set/',
@@ -201,13 +198,10 @@ $(document).ready(function () {
     }
     })
 })
-
     var confirm_rename = $('#confirm_rename');
-
     confirm_rename.on('click', function(){
         var new_name = $('#new_name').val();
         var set_id = '{{ set.id }}';
-
         if(new_name.length > 0){
             $.ajax({
         method: 'POST',
@@ -224,63 +218,47 @@ $(document).ready(function () {
         }
         console.log(new_name);
     })
-
-
     var students_button = $("#students_button");
     var survey_button = $("#surveys_button");
     var students = $("#students");
     var surveys = $("#surveys");
-
-
     $(students_button).click(function () {
         students_button.addClass('active');
         survey_button.removeClass('active');
         students.css('display', 'inline');
         surveys.css('display', 'none');
     })
-
     $(survey_button).click(function () {
-
         students_button.removeClass('active');
         survey_button.addClass('active');
         students.css('display', 'none');
         surveys.css('display', 'inline');
     })
-
 var collapse_student_div = $("#collapse_student_div")
 var open_student_div = $('#add_students_div')
 var search_box = $('#search_box');
-
 open_student_div.on('click', function(){
     search_box.css('display', '');
     open_student_div.css('display', 'none');
     collapse_student_div.css('display', '');
 })
-
 collapse_student_div.on('click',function(){
     search_box.css('display','none');
     collapse_student_div.css('display', 'none');
     open_student_div.css('display', '');
 })
-
-
-
-
     function get_set_id() {
         var id = this.id;
         var url = window.location.pathname.split('/');
         var set_id = url.pop() || url.pop()
         return set_id;
     }
-
     $(".remove_from_class").each(function () {
         $(this).on("click", function () {
             $parentDiv = $(this).closest(".item");
             var id = this.id;
             console.log(id)
             var set_id = get_set_id();
-
-
             $.ajax({
                 method: 'POST',
                 url: '/ajax/delete_from_class/',
@@ -293,24 +271,18 @@ collapse_student_div.on('click',function(){
                     if (data.success == true) {
                         $parentDiv.remove();
                         alert("Student successfully removed!");
-
                     } else if (data.success == false) {
                         alert("Student wasn't removed!");
                     } else {
                         alert("Invalid ID");
-
                     }
-
                 }
             })
         })
     })
-
    
-
     var search_bar = $('#search_bar');
     var suggested_students = $("#suggested_students");
-
     search_bar.keyup(function () {
         var keyword = search_bar.val();
         if (keyword.length > 2) {
@@ -335,15 +307,11 @@ collapse_student_div.on('click',function(){
                         suggested_students.append(div);
                     }
                 }
-
-
             })
         }
     })
-
     var students_to_add = $("#students_to_add")
     var ids = []
-
     function moveProfile() {
         var $this = $(this);
         var studentID = $this.data("id");
@@ -363,14 +331,10 @@ collapse_student_div.on('click',function(){
             clear()
         }
     }
-
-
     function clear() {
         suggested_students.empty();
         search_bar.val('');
     }
-
-
     $('#students_to_add').on('click', 'button', function () {
         var $this = $(this).closest('.item');
         var studentID = $this.data("id");
@@ -379,8 +343,6 @@ collapse_student_div.on('click',function(){
         //console.log(ids);
         $this.remove();
     });
-
-
     $('#add_students').on('click', function () {
         console.log('hello')
         $.ajax({
@@ -396,12 +358,10 @@ collapse_student_div.on('click',function(){
             }
         });
     })
-
         $('.resend_button').each(function() {
         $(this).on("click", function(){
             var form_id = this.id;
             console.log(form_id);
-
             $.ajax({
             method: 'POST',
             url: '/ajax/resend/',
@@ -413,9 +373,7 @@ collapse_student_div.on('click',function(){
                 console.log('surprisingly this worked.')
             }
             })
-
         })
     });
-
 })
 </script> {% endblock %}
