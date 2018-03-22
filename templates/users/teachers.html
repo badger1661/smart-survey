@@ -1,81 +1,61 @@
-{% extends 'base.html' %}
-
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 
 
 <div class="ui raised text container segment">
-<div class="ui horizontal divider">Teacher Signup</div>
-<form method='POST'>
-<div class="ui form segment">
-    {% csrf_token %}
-    <div class="required field" >
-            School {{ form.email.label }}
-            {{ form.email }}
-            {{ form.email.errors }}
-        </div>
-        <div class="two fields">
-                <div class="field">
-                    {{ form.prefix.label }}
-                    {{ form.prefix }}
-                    {{ form.prefix.errors }}
-                    
+      <div class="ui horizontal divider">Teacher Signup</div>
+      <form method='POST'>
+            <div class="ui form segment">
+                  {% csrf_token %}
+                  <!-- EMAIL -->
+                  <div class="required field">
+                        School {{ form.email.label }} {{ form.email }} {{ form.email.errors }}
+                  </div>
+                  <!-- PREFIX AND SUBJECT -->
+                  <div class="two fields">
+                        <div class="field">
+                              {{ form.prefix.label }} {{ form.prefix }} {{ form.prefix.errors }}
 
-                </div>
-                <div class="field">
-                     {{ form.subject.label }}
-                     {{ form.subject }}
-            {{ form.subject.errors }}
-                     
-                 </div>
+
+                        </div>
+                        <div class="field">
+                              {{ form.subject.label }} {{ form.subject }} {{ form.subject.errors }}
+
+                        </div>
+                  </div>
+                  <!-- FIRST AND LAST NAME -->
+                  <div class="two fields">
+                        <div class="field">
+                              {{ form.first_name.label }} {{ form.first_name }} {{ form.first_name.help_text }} {{ form.first_name.errors }}
+
+
+                        </div>
+                        <div class="field">
+                              {{ form.last_name.label }} {{ form.last_name }} {{ form.last_name.help_text }} {{ form.last_name.errors }}
+
+                        </div>
+                  </div>
+                  <!-- PASSWORD  -->
+                  <div class="two fields">
+                        <div class="field">
+
+                              {{ form.password1.label }} {{ form.password1 }} {{ form.password1.errors }} {{ form.password2.errors }}
+                        </div>
+                        <div class="field">
+                              {{ form.password2.label }} {{ form.password2 }}
+
+
+                        </div>
+                  </div>
+                  <div class="ui divider"></div>
+
+                  <button class="ui primary submit button" name="submit_button" id="submit_button" type="submit">Sign up</button>
             </div>
-   <div class="two fields">
-      <div class="field">
-            {{ form.first_name.label }}          
-            {{ form.first_name }}
-            {{ form.first_name.help_text }}
-            {{ form.first_name.errors }}
-            
-            
-      </div>
-      <div class="field">
-        {{ form.last_name.label }}          
-        {{ form.last_name }}
-        {{ form.last_name.help_text }}
-        {{ form.last_name.errors }}
-          
-      </div>
-   </div>
-
-   <div class="two fields">
-      <div class="field">
-            {{ form.password1.label }}          
-            {{ form.password1 }}
-        {{ form.password1.errors }}
-        {{ form.password2.errors }}
-      </div>
-      <div class="field">
-            {{ form.password2.label }}          
-            {{ form.password2 }}
-            
-            
-      </div>
-   </div>
-   <div class="ui divider"></div>
-   
-   <button class="ui primary submit button" name="submit_button" id="submit_button" type="submit">Sign up</button>
-</div>
-</form>
-<div class="ui bottom attached warning message">
-        <i class="icon help"></i>
-        Already signed up? <a href="/login/">Login here</a> instead.
+      </form>
+      <!-- ALREADY SIGNED UP MESSAGE -->
+      <div class="ui bottom attached warning message">
+            <i class="icon help"></i>
+            Already signed up?
+            <a href="/login/">Login here</a> instead.
       </div>
 </div>
 {% endblock %}
-
-
-
-
-
-
-
-

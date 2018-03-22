@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 
-from .models import Student, Teacher, School, Subject, Prefix, SchoolAdmin, YearGroup, Set
+from .models import Student, Teacher, School, Subject, Prefix, SchoolAdmin, Set
 # Register your models here.
 admin.site.register(Student)
 admin.site.register(Teacher)
@@ -12,7 +12,6 @@ admin.site.register(Subject)
 admin.site.register(Prefix)
 admin.site.register(SchoolAdmin)
 admin.site.register(Set)
-admin.site.register(YearGroup)
 
 @admin.register(get_user_model())
 class UserAdmin(UserAdmin):

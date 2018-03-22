@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import Student, Teacher, Subject, Prefix, Set, YearGroup, School
+from .models import Student, Teacher, Subject, Prefix, Set, School
 from django.core.exceptions import ObjectDoesNotExist
 
 class StudentRegister(UserCreationForm):
@@ -48,7 +48,7 @@ class StudentRegister(UserCreationForm):
 
 class TeacherRegister(UserCreationForm):
     email = forms.EmailField(required = True)
-    prefix = forms.ModelChoiceField(queryset= Prefix.objects.all().order_by('prefix'), required = True)    
+    prefix = forms.ModelChoiceField(queryset= Prefix.objects.all().order_by('prefix'), required = True)
     subject = forms.ModelChoiceField(queryset= Subject.objects.all().order_by('subject_name'), required = True)
 
     def __init__(self, *args, **kwargs):

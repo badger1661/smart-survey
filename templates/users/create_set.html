@@ -84,7 +84,6 @@ function clear(){
                     }
                 }
 
-
             })
         }
     })
@@ -107,7 +106,6 @@ var students_to_add = $("#students_to_add")
             div.addClass("item");
             students_to_add.append(div);
             clear()
-            //console.log(ids)}
         } else {
             clear()
         }
@@ -118,7 +116,6 @@ var students_to_add = $("#students_to_add")
         var studentID = $this.data("id");
         var pos = ids.indexOf(studentID);
         ids.splice(pos, 1);
-        //console.log(ids);
         $this.remove();
     });
 
@@ -126,6 +123,14 @@ $("#create_class").on('click', function(){
     var error = false;
     var set_name = $("#set_name").val()
     var url = window.location.pathname;
+    if(set_name.length < 4){
+        alert('Please enter in a name for the Class')
+    }
+    else if(ids.length == 0){
+        alert('Please add some Students')
+
+    }
+    else{
     $.ajax({
         method: "POST",
         url: url,
@@ -135,123 +140,18 @@ $("#create_class").on('click', function(){
             },
         dataType: 'json',
         success: function (data) {
+            if(data.message){
+            alert(data.message)
+            }else{
             location.href = data.url;//<--Redirect on success
+            }
         }
         });
+        }
 })
     
 </script>
 
 {% endblock %}
 
-
-
-<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-<script type="text/javascript">
-var csrftoken = Cookies.get('csrftoken');
-
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-    }
-});
-
-
-
-
-search_bar.keyup(function () {
-    
-    var keyword = search_bar.val();
-    if(keyword.length > 2){
-        //console.log('hey')
-        var url = window.location.pathname;
-        $.ajax({
-            method: 'GET',
-            url: url,
-            data: {
-            'keyword': keyword,
-            },
-            dataType: 'json',
-            success: function (data) {
-                suggested_students.empty(); 
-                var suggestions = data.students;
-                for(i = 0; i< suggestions.length; i++){
-                    var current_student = suggestions[i];
-                    var div = $("<a href='#'><div/></a>");
-                    div.data("name", current_student[0]);
-                    div.data("id", current_student[1]);
-                    div.html(current_student[0] + "<br/>");
-                    div.on("click", moveProfile);
-                    div.css({"background-color": "light blue"});
-                    suggested_students.append(div);
-                }
-            }
-            })
-        }else if(keyword.length == 0){
-            clear()
-            
-        }
-    })
-
-var students_to_add = $("#students_to_add")
-var ids = []
-function moveProfile(){
-    var $this = $(this);
-    var studentID = $this.data("id");
-    if (ids.indexOf(studentID) == -1){
-    ids.push(studentID);
-    var studentName = $this.data("name");
-    var div = $("<div/>");
-    div.data('id', studentID);
-    div.data('name', studentName);
-    div.html("<div>" + studentName +"</div><div><button>Remove</button></div>");
-    div.css({"background-color": "light blue"});
-    div.addClass("container");
-    students_to_add.append(div);    
-    clear()
-    console.log(ids)}
-    else{
-        clear()
-    }
-}
-
-$(function() {
-    $('#students_to_add').on('click', 'button', function() {
-    var $this = $(this).closest('.container');
-    var studentID = $this.data("id");
-    var pos = ids.indexOf(studentID);
-    ids.splice(pos, 1);
-    console.log(ids);
-    $this.remove();
-    });
-  });
-
-function send(){
-    var set_name = $('#class_name').val();
-    //console.log(ids)
-    //console.log(set_name)
-    var url = window.location.pathname;
-    $.ajax({
-        method: "POST",
-        url: url,
-        data: {
-            'name': set_name,
-            'student_ids': JSON.stringify(ids),
-            },
-        dataType: 'json',
-        success: function (data) {
-            //location.href = data.url;//<--Redirect on success
-        }
-        });
-}
-</script>
- -->
 

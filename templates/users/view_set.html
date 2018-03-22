@@ -87,12 +87,12 @@
     <div id='surveys' style="display:none">
             <div class="item">
                     <div class="content">
-                            <a href="/form/create/">
-                            <button class="ui labeled icon button green">
-                                    <i class="inverted plus icon"></i>
-                                    New Survey
-                            </button>
-                            </a>
+                <a href="/form/create?set_dropdown={{set.id}}">
+                <button class="ui labeled icon button green">
+                        <i class="inverted plus icon"></i>
+                        New Survey
+                </button>
+                </a>
                     <div class="description"></div>
                             
                     </div>
@@ -168,6 +168,7 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function () {
+    // – Taken from Django Docs
     var csrftoken = Cookies.get('csrftoken');
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection

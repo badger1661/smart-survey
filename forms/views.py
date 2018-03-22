@@ -388,7 +388,7 @@ def compare_form(request, form_one = None, form_two = None):
     return render(request, 'form/compare_form.html', args)
 
 def resend_form(request):
-    #gets form
+    #GETS FORM
     form_id = request.POST.get('id', None)
     form = Form.objects.get(pk = form_id)
     

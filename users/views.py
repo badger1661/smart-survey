@@ -29,14 +29,14 @@ from forms.models import Form, Answer
 # Create your views here.
 
 def activate(request, uidb64, token):
-    #Try get user based on token
+    #TRY GET USER BASED ON TOKEN
     try:
         id_ = force_text(urlsafe_base64_decode(uidb64))
         user = get_user_model().objects.get(pk=id_)
     except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
         user = None
 
-    #If user exists change confirmed and is_active attribute to True
+    #IF USER EXISTS CHANGE CONFIRMED AND is_active ATTRIBUTES TO TRUE
     if user is not None and account_activation_token.check_token(user, token):
 
         groups = user.groups.all()
@@ -49,7 +49,7 @@ def activate(request, uidb64, token):
         return render(request, 'email/invalid_token.html')
 
 def send_confirmation_email(request, user):
-    #gets all the info for verification email
+    #GETS ALL THE INFORMATION FOR THE CONFIRMATION EMAIL
     current_site = get_current_site(request)
     subject = 'Activate your SmartSurvey account'
     message = render_to_string('email/email_activation.html', {
@@ -65,7 +65,7 @@ def student_registration(request):
 
     if request.method == 'POST':
         form = StudentRegister(request.POST)
-        #Gets school object from email domain.        
+        #GETS SCHOOL OBJECT FROM EMAIL DOMAIN
         school_domain = form['email'].value().split('@')[1]
         try:
             school = School.objects.get(email_domain = school_domain)
@@ -77,11 +77,12 @@ def student_registration(request):
             Student.school = school
             Student.save()
             user.groups.add(Group.objects.get(name='Student'))
-            #user.is_active to stop users logging in without confirming their emails
+            #user.is_active TO STOP USERS LOGGING IN WITHOUT CONFIRMING THEIR EMAILS
+            
             user.is_active = False
             user.save()
 
-            #Sends confirmation link.
+            #SENDS CONFIRMATION LINK
             send_confirmation_email(request, user)
 
             args = {'email': user.email,
@@ -98,27 +99,26 @@ def student_registration(request):
         return render(request, 'users/students.html', args)
 
 def teacher_registration(request):
-    #Teacher Registration
+    #TEACHER REGISTRATION
     
     if request.method == 'POST':
         form = TeacherRegister(request.POST)
-        #Gets school object from email domain.
+        #GETS SCHOOL OBJECT FROM EMAIL DOMAIN
         email = form['email'].value().split('@')[1]
         try:
             school = School.objects.get(email_domain = email)
         except ObjectDoesNotExist:
-            #add custom error message here
             pass
         if form.is_valid():
             user, Teacher = form.save()
             Teacher.school = school
             Teacher.save()
             user.groups.add(Group.objects.get(name='Teacher'))
-            #user.is_active to stop users logging in without confirming their emails
+            #user.is_active TO STOP USERS LOGGING IN WITHOUT CONFIRMING THEIR EMAILS
                       
             user.is_active = False
             user.save()
-            #Sends confirmation link.
+            #SENDS CONFIRMATION LINK
             send_confirmation_email(request, user)
             
             args = {'email': user.email,
@@ -137,18 +137,19 @@ def teacher_registration(request):
 
 @login_required(login_url='/login/')
 def confirm_teacher(request):
+    #GET THE TEACHER OBJECT AND IF THE TEACHER SHOULD BE VERIFIED OR DELETED
     id_ = request.POST.get('teacherID', None)
     delete = request.POST.get('delete', False)
     user = get_user_model().objects.get(pk = id_)
     teacher = Teacher.objects.get(user = user)
 
+    #CHECK IF THE TEACHER SHOULD BE DELETED OR ACCEPTED
     if delete == 'True':
         user.delete()
     else:
         teacher.verified = True
         teacher.save()
-    args = {}
-    return JsonResponse(args)
+    return JsonResponse({})
 
 class create_set(LoginRequiredMixin, View):
     login_url = '/login/'
@@ -182,24 +183,24 @@ class create_set(LoginRequiredMixin, View):
         name = request.POST.get('name', None)
 
         form = SetCreate(request.POST)
+        
         #Creates the Set Object
-        if form.is_valid():
-            instance = form.save(commit = False)
-            instance.name = name
-            teacher = request.user
-            instance.teacher = teacher
-            instance.save()
-            #Adds all the students by getting their user object by id.
+        if len(name) >= 1 and len(student_ids) >= 1:
+            new_set = Set(name = name,
+                        teacher = request.user,
+                        )
+            new_set.save()
+                #Adds all the students by getting their user object by id.
             for id_ in student_ids:
                 user = get_user_model().objects.get(pk = id_)
-                instance.students.add(user)
-                instance.save()
-        else:
-            print('heyos') 
-        
-        url = '/class/{}/'.format(instance.id)
-        args = {'url': url}
+                new_set.students.add(user)
+                new_set.save()
 
+            url = '/class/{}/'.format(new_set.id)
+            args = {'url': url}
+        else:
+            args = {'message': 'Please ensure you have a Class name and at least 1 Student you wish to add'}
+        
         return JsonResponse(args)
 
 @login_required(login_url='/login/')
@@ -276,9 +277,8 @@ def delete_from_class(request):
 
 
 @login_required(login_url='/login/')
-
 def profile(request):
-    #Gets the user
+    #GET THE USER
     user = request.user
     
     args = {'user': user}
@@ -286,13 +286,13 @@ def profile(request):
     logger.debug(user.is_teacher())
 
     if user.is_teacher():
-        #Gets the teachers Forms and their Sets and checks if they're verified
+        #GETS THE TEACHERS FORM AND THEIR SETS AND CHECKS IF THEYRE VERIFIED
         teacher = Teacher.objects.get(user = user)
         forms = Form.objects.filter(teacher = user, duplicate = False)
         sets = Set.objects.filter(teacher = user)
         new_form_list = []
         
-        #check how many times each form has been send
+        #CHECK HOW MANY TIMES EACH FORM HAS BEEN SENT
         for form in forms:
             resends = Form.objects.filter(parent = form)
             form.times_sent = len(resends) + 1
@@ -305,7 +305,7 @@ def profile(request):
         return render(request, 'users/teacher_profile.html', args)
     
     elif user.is_student():
-        #gets students sets and forms that they havent replied to
+        #GETS STUDENTS FORMS THAT THEY HAVENT REPLIED TO
         student = Student.objects.get(user = user)
         sets = Set.objects.filter(students__id=user.id)
         forms = []
@@ -321,7 +321,7 @@ def profile(request):
         return render(request, 'users/student_profile.html', args)
 
     elif user.is_admin():
-        #Gets teachers that have confirmed their email but aren't confirmed as teachers.
+        #GETS TEACHERS THAT HAVE CONFIRMED THEIR EMAIL BUT ARENT CONFIRMED AS TEACHERS
         admin_object = SchoolAdmin.objects.get(user = user)
         school = School.objects.get(school_name = admin_object.school.school_name)
         school_teachers = Teacher.objects.filter(school = school, verified = False)
@@ -331,22 +331,21 @@ def profile(request):
                 user = teacher.user
                 school_teachers = school_teachers.exclude(user = user)
 
-        #print(school_teachers)
         args = {'teachers': school_teachers,
                 'admin': admin_object}
         return render(request, 'users/admin_profile.html', args)
 
     else:
-        return HttpResponse("<html><body>No profile for you</body></html>")
+        return HttpResponse("<html><body>No profile found; contact a Site Admin</body></html>")
 
 
 def delete_set(request):
     #gets set and deletets it
     set_id = request.POST.get('id', None)
     set_ = Set.objects.get(pk = set_id)
-    
-    set_.delete()
-    return JsonResponse({})
+    if request.user == set_.teacher:
+        set_.delete()
+        return JsonResponse({})
 
 def rename_set(request):
     #gets set and new name and renames set
@@ -354,8 +353,9 @@ def rename_set(request):
     new_name = request.POST.get('name', None)
     
     set_ = Set.objects.get(pk = set_id)
-    set_.name = new_name
+    if request.user == set_.teacher:
+        set_.name = new_name
 
-    set_.save()
+        set_.save()
 
-    return JsonResponse({})
+        return JsonResponse({})

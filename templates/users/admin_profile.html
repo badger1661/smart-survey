@@ -15,14 +15,14 @@
         </a>
 
     </div>
-    <!-- CONFIRM TEACHER -->
+    <!-- CONFIRM TEACHERS -->
     <div id="confirm_teachers">
         {% if teachers.count == 0 %}
         <div id="no_teachers" style="text-align: center;">
-                <h4>
-                    <u>No Teachers to confirm</u>
-                </h4>
-            </div>
+            <h4>
+                <u>No Teachers to confirm</u>
+            </h4>
+        </div>
         {% else %}
         <div class="ui relaxed divided list accordion">
             {% for teacher in teachers%}
@@ -40,8 +40,8 @@
                     </a>
 
                     <div class="description">
-                        Email: {{ teacher.user.email }}<br>
-                        Subject: {{ teacher.subject }}
+                        Email: {{ teacher.user.email }}
+                        <br> Subject: {{ teacher.subject }}
                     </div>
                 </div>
             </div>
@@ -51,101 +51,67 @@
         {% endif %}
     </div>
 
-        
+
 </div>
 <script type="text/javascript">
-var csrftoken = Cookies.get('csrftoken');
 
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
+    // ALLOWS FOR POST REQUESTS WITH AJAX
+    var csrftoken = Cookies.get('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
-});
-
-// var confirm_teachers_button = $("#confirm_teachers_button");
-// var confirm_teachers = $("#confirm_teachers");
-// var students_button = $("#students_button");
-// var students = $("#students_list");
-// var teachers_button = $("#teachers_button");
-// var teachers = $("#teachers_list");
-
-// confirm_teachers_button.on('click', function(){
-//     confirm_teachers_button.addClass('active');
-//     confirm_teachers.css('display', 'inline')
-//     students_button.removeClass('active');
-//     students.css('display', 'none')
-//     teachers_button.removeClass('active');
-//     teachers.css('display', 'none')
-    
-// })
-
-// students_button.on('click', function(){
-//     students_button.addClass('active');
-//     students.css('display', 'inline')
-//     confirm_teachers_button.removeClass('active');
-//     confirm_teachers.css('display', 'none')
-//     teachers_button.removeClass('active');
-//     teachers.css('display', 'none')
-    
-// })
-
-// teachers_button.on('click', function(){
-//     teachers_button.addClass('active');
-//     teachers.css('display', 'inline')
-//     confirm_teachers_button.removeClass('active');
-//     confirm_teachers.css('display', 'none')
-//     students_button.removeClass('active');
-//     students.css('display', 'none')
-    
-// })
-
-$('.button.compact.positive').each(function(){
-    $(this).on('click', function(){
-        var teacher_id = $(this).attr('id');
-        $parentDiv = $(this).closest(".item");        
-        
-        $.ajax({
-        method: "POST",
-        url: '/ajax/confirm/',
-        data: {
-            'teacherID': teacher_id,
-            'delete': 'False',
-            },
-        dataType: 'json',
-        success: function (data) {
-            $parentDiv.remove();
-            
-            console.log('teacher accepted')
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
         }
-        });
-    })
-})
+    });
 
-$('.button.compact.negative').each(function(){
-    $(this).on('click', function(){
-        var teacher_id = $(this).attr('id');
-        $parentDiv = $(this).closest(".item");        
-        $.ajax({
-        method: "POST",
-        url: '/ajax/confirm/',
-        data: {
-            'teacherID': teacher_id,
-            'delete': 'True',
-            },
-        dataType: 'json',
-        success: function (data) {
-            $parentDiv.remove();
-            console.log('teacher deleted')
-        }
-        });
-    })
-})
+    //USED TO SEND A CONFIRMATION REQUEST FOR TEACHERS
+    $('.button.compact.positive').each(function () {
+        $(this).on('click', function () {
+            var teacher_id = $(this).attr('id');
+            $parentDiv = $(this).closest(".item");
 
-</script>
-{% endblock %}
+            $.ajax({
+                method: "POST",
+                url: '/ajax/confirm/',
+                data: {
+                    'teacherID': teacher_id,
+                    'delete': 'False',
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $parentDiv.remove();
+
+                    console.log('teacher accepted')
+                }
+            });
+        })
+    })
+
+    //USED TO SEND A DELETE REQUEST FOR TEACHERS
+    $('.button.compact.negative').each(function () {
+        $(this).on('click', function () {
+            var teacher_id = $(this).attr('id');
+            $parentDiv = $(this).closest(".item");
+            $.ajax({
+                method: "POST",
+                url: '/ajax/confirm/',
+                data: {
+                    'teacherID': teacher_id,
+                    'delete': 'True',
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $parentDiv.remove();
+                    console.log('teacher deleted')
+                }
+            });
+        })
+    })
+
+</script> {% endblock %}

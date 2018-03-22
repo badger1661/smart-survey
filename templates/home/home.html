@@ -1,44 +1,49 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
-
-{% block content %}
+{% extends 'base.html' %} {% load staticfiles %} {% block content %}
 <div style="width: 100%; margin-left:auto; margin-right:auto;padding-bottom:15%">
-    <div style='text-align: center;'><h1><u>Sleek. Smooth. Smart</u></h1></div>
+    <div style='text-align: center;'>
+        <h1>
+            <u>Sleek. Smooth. Smart</u>
+        </h1>
+    </div>
     <br>
 
     <div class="ui center aligned three column grid">
         <div class="four wide column">
-          <div class="ui segment">
+            <div class="ui segment">
                 <div class="ui horizontal divider">
-                Create a Class
-                 
-                      </div>
-                      <img src="{% static 'home_images/1.png' %}" alt="View Results" width="100%" height="100%">
-          </div>
-        </div>
-        <div style='padding-top:9%;'>
-        <i class="huge arrow alternate circle right outline icon"></i>
-    </div>
-        <div class="four wide column">
-          <div class="ui segment">
-              <div class="ui horizontal divider">
-              Send a Survey
-                  </div>
-                  <img src="{% static 'home_images/2.png' %}" alt="View Results" width="100%" height="100%">
-          </div>
+                    Create a Class
+
+                </div>
+                <img src="{% static 'home_images/1.png' %}" alt="View Results" width="100%" height="100%">
+            </div>
         </div>
         <div style='padding-top:9%;'>
             <i class="huge arrow alternate circle right outline icon"></i>
         </div>
         <div class="four wide column">
-          <div class="ui segment">
+            <div class="ui segment">
                 <div class="ui horizontal divider">
-                        View the results
-                      </div>
-                      <img src="{% static 'home_images/3.png' %}" alt="View Results" width="100%" height="100%">
-          </div>
+                    Send a Survey
+                </div>
+                <img src="{% static 'home_images/2.png' %}" alt="View Results" width="100%" height="100%">
+            </div>
         </div>
-      </div><br><br>
-        <div style='text-align: center;'><h2>Want to sign your school up?</h2>Email admin@smartsurvey.xyz with your School Name and an account will be set up for you!</div>
+        <div style='padding-top:9%;'>
+            <i class="huge arrow alternate circle right outline icon"></i>
+        </div>
+        <div class="four wide column">
+            <div class="ui segment">
+                <div class="ui horizontal divider">
+                    View the results
+                </div>
+                <img src="{% static 'home_images/3.png' %}" alt="View Results" width="100%" height="100%">
+            </div>
+        </div>
     </div>
+    <br>
+    <br>
+    <div style='text-align: center;'>
+        <h2>Want to sign your school up?</h2>Email
+        <a href='mailto:admin@smartsurvey.xyz'>admin@smartsurvey.xyz </a>with your School Name and an account will be set up for you!</div>
+</div>
 {% endblock %}

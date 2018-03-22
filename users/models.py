@@ -80,7 +80,6 @@ class Teacher(models.Model):
     prefix = ForeignKey('Prefix', on_delete = models.SET_NULL, null = True)
     school = ForeignKey('School', on_delete = models.CASCADE, null = True)
     subject = ForeignKey('Subject', null = False, on_delete = models.CASCADE)
-   #subject_head = BooleanField(default = False)
     verified = BooleanField(default = False)
 
     def __str__(self):
@@ -116,13 +115,6 @@ class Prefix(models.Model):
 
     def __str__(self):
         return self.prefix
-
-class YearGroup(models.Model):
-    year = IntegerField()
-
-    def __str__(self):
-        year = self.year
-        return 'Year {}'.format(year)
 
 class Set(models.Model):
     name = CharField(max_length = 25)

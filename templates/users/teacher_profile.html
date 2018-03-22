@@ -1,48 +1,63 @@
 {% extends "base.html" %} {% block content %}
 <div style="width: 60%; margin-left:auto; margin-right:auto;padding-bottom:15%">
     <div id="welcome" style="text-align: center;">
-    <h2><u>Welcome to your profile page, {{ teacher.prefix }} {{ user.last_name }}.</u></h2>
+        <h2>
+            <u>Welcome to your profile page, {{ teacher.prefix }} {{ user.last_name }}.</u>
+        </h2>
     </div>
+    <!-- BUTTONS TO SWITCH BETWEEN SURVEYS AND CLASSES -->
     <div class="ui two item menu" id="menu">
-        <a class="item active" id='survey_button'><h3><u>My Surveys</u></h3></a>
-        <a class="item" id='sets_button'><h3><u>My Classes</u></h3></a>
+        <a class="item active" id='survey_button'>
+            <h3>
+                <u>My Surveys</u>
+            </h3>
+        </a>
+        <a class="item" id='sets_button'>
+            <h3>
+                <u>My Classes</u>
+            </h3>
+        </a>
     </div>
 
+    <!-- CHECKS IF TEACHER IS VERIFIED -->
+    {% if teacher.verified == True %}
 
     <!-- SURVEYS -->
 
-    {% if teacher.verified == True %}
     <div id='surveys'>
-            <div class="item">
-                    <div class="content">
-                            <a href="/form/create/">
-                            <button class="ui labeled icon button green">
-                                    <i class="inverted plus icon"></i>
-                                    New Survey
-                            </button>
-                            </a>
-                    <div class="description"></div>
-                            
-                    </div>
+        <div class="item">
+            <div class="content">
+                <a href="/form/create/">
+                    <button class="ui labeled icon button green">
+                        <i class="inverted plus icon"></i>
+                        New Survey
+                    </button>
+                </a>
+                <div class="description"></div>
 
-                </div>
+            </div>
+
+        </div>
         <div class="ui relaxed divided list accordion">
-            
+            <!-- RENDERS ALL THE SURVEYS THE TEACHER HAS SENT OUT -->
             {% for form in forms %}
 
             <div class="item">
                 <div class="right floated content">
                     <div class="ui button compact resend_button" id="{{ form.id }}">Resend</div>
-                    
-                  </div>
+
+                </div>
                 <i class="large file text outline middle aligned icon"></i>
                 <div class="content">
                     <a href="{{ form.get_absolute_url }}" class="header">
-                        <h3><u>{{ form.title }} </u></h3></a>
-                    
-                    <div class="description">Class:<a href="{{ form.setID.view_set }}"> {{ form.setID.name }}</a>
-                        <br>
-                        Times sent: {{ form.times_sent }}
+                        <h3>
+                            <u>{{ form.title }} </u>
+                        </h3>
+                    </a>
+
+                    <div class="description">Class:
+                        <a href="{{ form.setID.view_set }}"> {{ form.setID.name }}</a>
+                        <br> Times sent: {{ form.times_sent }}
                     </div>
                 </div>
             </div>
@@ -52,30 +67,33 @@
 
     <!-- SETS -->
     <div id='sets' style="display:none">
-            <div class="item">
-                    <div class="content">
-                        <a href="/class/create/">
-                            <button class="ui labeled icon button green">
-                                    <i class="plus icon"></i>
-                                    New Class
-                            </button>
-                        </a>
-                    <div class="description"></div>
-                            
-                    </div>
-                </div>
+        <div class="item">
+            <div class="content">
+                <a href="/class/create/">
+                    <button class="ui labeled icon button green">
+                        <i class="plus icon"></i>
+                        New Class
+                    </button>
+                </a>
+                <div class="description"></div>
+
+            </div>
+        </div>
 
 
         <div class="ui relaxed divided list">
+            <!-- RENDERS THE TEACHERS SETS -->
             {% for set in sets %}
 
             <div class="item">
                 <i class="large users icon middle aligned icon"></i>
                 <div class="content">
                     <a href="{{ set.view_set }}" class="header">
-                        <h3><u>{{ set.name }}</u></h3>
+                        <h3>
+                            <u>{{ set.name }}</u>
+                        </h3>
                     </a>
-                    <div class="description">{{ set.amount_of_students }} students</div>                    
+                    <div class="description">{{ set.amount_of_students }} students</div>
                 </div>
             </div>
             {% endfor %}
@@ -83,30 +101,35 @@
     </div>
     {% else %}
     <div id="not_verified" style="text-align: center;">
-            <h4>
-                <u>Please confirm your email and wait for the school to verify you are a teacher before using your account.</u>
-            </h4>
-        </div>
+        <h4>
+            <u>Please confirm your email and wait for the school to verify you are a teacher before using your account.</u>
+        </h4>
+    </div>
     {% endif %}
 </div>
-    
+
 
 <script type="text/javascript">
 
-var csrftoken = Cookies.get('csrftoken');
 
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
+    // ALLOWS FOR POST REQUESTS WITH JAVASCRIPT
+
+    var csrftoken = Cookies.get('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
-});
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
 
+
+    // HANDLES THE HIDING AND SHOWING OF SETS AND FORMS
     var survey_button = $("#survey_button");
     var sets_button = $("#sets_button");
     var surveys = $("#surveys");
@@ -128,24 +151,24 @@ $.ajaxSetup({
         sets.css('display', 'inline');
     })
 
-    $('.resend_button').each(function() {
-        $(this).on("click", function(){
+
+    // AJAX TO SEND RESEND FORM REQUEST
+    $('.resend_button').each(function () {
+        $(this).on("click", function () {
             var form_id = this.id;
-            console.log(form_id);
 
             $.ajax({
-            method: 'POST',
-            url: '/ajax/resend/',
-            data: {
-            'id': form_id,
-            },
-            dataType: 'json',
-            success: function (data) {
-                alert("Form successfully resent");            
+                method: 'POST',
+                url: '/ajax/resend/',
+                data: {
+                    'id': form_id,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    alert("Form successfully resent");
                 }
             })
 
         })
     });
-</script> 
-{% endblock %}
+</script> {% endblock %}

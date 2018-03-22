@@ -13,19 +13,19 @@
                 </div>
                 <div class="field">
                     <label>Class</label>
-                    <div class="ui selection dropdown" id="set_dropdown">
-                        <input type="hidden" name="set">
-                        <i class="dropdown icon"></i>
-                        <div class="default text">Class</div>
-                        <div class="menu">
-                            {% for set in sets %}
-                            <div class="item" data-value="{{ set.id }}">{{ set.name }}</div>
+                <div class="ui selection dropdown" id="set_dropdown">
+                    <input type="hidden" id='class_dropdown' name="set">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Class</div>
+                    <div class="menu">
+                        {% for set in sets %}
+                        <div class="item" data-value="{{ set.id }}">{{ set.name }}</div>
 
-                            {% endfor %}
+                        {% endfor %}
 
-                        </div>
-                    </input>
                     </div>
+                </input>
+                </div>
                 </div>
             </div>
             <div class="field">
@@ -45,7 +45,7 @@
             </div>
 
             <div class="field">
-                <button stlye="float:right" id="add_students" class="ui icon button teal">
+                <button stlye="float:right" id="add_questions" class="ui icon button teal">
                     <i class="plus icon"></i>
 
                 </button>
@@ -85,7 +85,7 @@
     var amount_of_questions = 1;
 
 
-    $("#add_students").on('click', function () {
+    $("#add_questions").on('click', function () {
         if (amount_of_questions < 10) {
             question_container.append(question_html);
             amount_of_questions++;

@@ -1,26 +1,36 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
 
-{% block content %}
+
 <div style="width: 60%; margin-left:auto; margin-right:auto;padding-bottom:15%">
-        <div id="welcome" style="text-align: center;">
-                <h2><u>Welcome to your profile page, {{ user.first_name }}</u></h2>
-                </div>
-<div class="ui one item menu" id="menu">
-        <a class="item active" id='survey_button'><h3><u>My unanswered Surveys</u></h3></a>
-</div>
+    <div id="welcome" style="text-align: center;">
+        <h2>
+            <u>Welcome to your profile page, {{ user.first_name }}</u>
+        </h2>
+    </div>
+    <div class="ui one item menu" id="menu">
+        <a class="item active" id='survey_button'>
+            <h3>
+                <u>My unanswered Surveys</u>
+            </h3>
+        </a>
+    </div>
 
-<div class="ui relaxed divided list accordion">
-    {% for form in forms %}
-    <div class="item">
+    <div class="ui relaxed divided list accordion">
+        <!-- RENDERS ALL THE SURVEYS THAT THE STUDENT HASNT ANSWERED -->
+        {% for form in forms %}
+        <div class="item">
             <i class="large file text outline middle aligned icon"></i>
             <div class="content">
                 <a href="{{ form.answer_form }}" class="header">
-                    <h3><u>{{ form.title }} </u></h3></a>
+                    <h3>
+                        <u>{{ form.title }} </u>
+                    </h3>
+                </a>
 
             </div>
         </div>
-    {% endfor %}    
-</div>
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

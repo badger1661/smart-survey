@@ -23,7 +23,6 @@ class Form(models.Model):
     setID = ForeignKey(Set, on_delete = models.CASCADE)
     duplicate = BooleanField(default = False)
     parent = ForeignKey('Form', null = True, blank = True, on_delete = models.CASCADE)
-    #iteration = IntegerField(default = 0, null = False)
 
     def __str__(self):
         return self.title
