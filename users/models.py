@@ -3,7 +3,6 @@ from django.db.models import OneToOneField, ForeignKey, BooleanField, CharField,
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.conf import settings
-#FOR CUSTOM USER
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from django.utils.translation import ugettext_lazy as _

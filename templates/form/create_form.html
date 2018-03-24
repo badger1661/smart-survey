@@ -5,6 +5,7 @@
     <div class="ui raised container segment">
         <div class="ui horizontal divider">Create New Survey</div>
 
+        <!-- GET SURVEY NAME AND THE CLASS IT SHOULD GO TO -->
         <div class="ui form segment">
             <div class="two fields">
                 <div class="field">
@@ -13,19 +14,20 @@
                 </div>
                 <div class="field">
                     <label>Class</label>
-                <div class="ui selection dropdown" id="set_dropdown">
-                    <input type="hidden" id='class_dropdown' name="set">
-                    <i class="dropdown icon"></i>
-                    <div class="default text">Class</div>
-                    <div class="menu">
-                        {% for set in sets %}
-                        <div class="item" data-value="{{ set.id }}">{{ set.name }}</div>
+                    <div class="ui selection dropdown" id="set_dropdown">
+                        <input type="hidden" id='class_dropdown' name="set">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">Class</div>
+                        <div class="menu">
+                            <!-- RENDER IN THE USERS CLASSES -->
+                            {% for set in sets %}
+                            <div class="item" data-value="{{ set.id }}">{{ set.name }}</div>
 
-                        {% endfor %}
+                            {% endfor %}
 
+                        </div>
+                        </input>
                     </div>
-                </input>
-                </div>
                 </div>
             </div>
             <div class="field">
@@ -45,7 +47,7 @@
             </div>
 
             <div class="field">
-                <button stlye="float:right" id="add_questions" class="ui icon button teal">
+                <button style="float:right" id="add_questions" class="ui icon button teal">
                     <i class="plus icon"></i>
 
                 </button>
@@ -62,7 +64,6 @@
 
         </div>
     </div>
-</div>
 
 <script type="text/javascript">
 
@@ -84,7 +85,7 @@
     var question_container = $("#question_container")
     var amount_of_questions = 1;
 
-
+    // COUNTER TO ENSURE UPTO 10 QUESTIONS ARE USED
     $("#add_questions").on('click', function () {
         if (amount_of_questions < 10) {
             question_container.append(question_html);
@@ -94,33 +95,37 @@
         }
     })
 
+    // SUBMITS DATA TO PYTHON
     $("#submit_form").on('click', function () {
-        
+
         var form_name = $("#form_name").val();
         var description = $("#form_description").val();
-        var setID = $('#set_dropdown').dropdown('get value');        
+        var setID = $('#set_dropdown').dropdown('get value');
         var additionalcomments = $("#additional_comments_checkbox").prop("checked");
         var questions = [];
 
-
+        // GETS EACH QUESTION
         $(".question_input").each(function () {
             var question = $(this).val();
             questions.push(question);
 
         })
+        // CHECKS THERE IS A TITLE
         var error = false;
         if (form_name == "") {
             error = true;
         }
-
+        // CHECKS THERE IS A DESCRIPTION
         if (description == "") {
             error = true
         }
 
+        // CHECKS THERE IS A SET
         if (setID == "") {
             error = true
         }
 
+        //  CHECKS THAT THERE ARE NO BLANK QUESTIONS
         for (var i = 0; i < questions.lenght; i++) {
             if (questions[i] == "") {
                 error = true;
@@ -146,111 +151,16 @@
                 },
                 dataType: 'json',
                 success: function (data) {
+                    if(data.message){
+                        alert(data.message)
+                    }else{
                     console.log(data.url);
                     location.href = data.url;//<--Redirect on success
+                    }
                 }
             });
         }
     });
 
-function get_value(){
-
-    $('#set_dropdown').dropdown();    
-    var setID = $('#set_dropdown').dropdown('get value');
-    //console.log(setID)   
-    return setID 
-}
-
 
 </script> {% endblock %}
-
-
-
-
-
-
-
-<!-- <h3>Title</h3>
-    
-
-
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-<script type="text/javascript">
-
-//Taken from Django Docs
-var csrftoken = Cookies.get('csrftoken');
-
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-    }
-});
-
-var question_form = '<div class="question"><label>Question: </label><input type="text" class="question_text"/>'
-
-//Builds the questions
-
-$(document).ready(function() {
-
-    //Adds questions one after another.
-    var placeholder = $("#questions"); 
-    var add_button = $("#newquestion"); 
-    $(placeholder).append(question_form);
-
-    var amount = 1;
-    $(add_button).click(function(e){ 
-        if(amount != 10){
-            console.log(amount)
-            e.preventDefault();
-            $(placeholder).append(question_form);
-            amount++;
-        }else{
-            console.log('You can only have 10 questions')
-            }   
-    });
-
-    var button = $("#send");
-
-    $(button).click(function() {
-        var title = $('#title').val();
-        var description = $('#description').val();
-        var checkbox = $('#additionalcomments').prop("checked");
-        var setid = $('#set').val();
-        var vals = [];
-        $("#questions :input").each(function(index) {
-            vals.push($(this).val());
-            })
-        
-        vals = JSON.stringify(vals);
-        
-        var url = window.location.pathname;
-        $.ajax({
-            method: "POST",
-            url: url,
-            data: {
-                'title': title,
-                'description': description,
-                'questions': vals,
-                'comments': checkbox,
-                'setid': setid,
-                },
-            dataType: 'json',
-            success: function (data) {
-                //location.href = data.url;//<--Redirect on success
-            }
-            });
-        });
-
-});
-
-
-
-</script> -->

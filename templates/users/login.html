@@ -1,30 +1,30 @@
 {% extends 'base.html' %} {% block content %}
 
-  <div class="ui raised text container segment">
-      <div class="ui horizontal divider">Login</div>
-      <form method='POST'>
-          <div class="ui form segment">
-              {% csrf_token %}
-              <div class="required field">
-                  {{ form.username.label }} 
-                  {{ form.username }} {{ form.username.errors }}
-              </div>
-              <div class="required field">
-                  {{ form.password.label }} {{ form.password }} {{ form.password.errors }}
-              </div>
-  {{ form.non_field_errors }}
-              
-              <button class="ui primary submit button" name="submit_button" id="submit_button" type="submit">Login</button><br>
-              
-            Forgot your password? Click <a href='/password_reset/'>here</a>.
-              
-          </div>
-      </form>
-      <div class="ui bottom attached warning message">
-            <i class="icon help"></i>
-            Haven't signed up yet? <a href="/signup/">Signup here</a> instead.
-          </div>
-  </div>
+<div class="ui raised text container segment">
+    <div class="ui horizontal divider">Login</div>
+    <form method='POST'>
+        <div class="ui form segment">
+            {% csrf_token %}
+            <div class="required field">
+                {{ form.username.label }} {{ form.username }} {{ form.username.errors }}
+            </div>
+            <div class="required field">
+                {{ form.password.label }} {{ form.password }} {{ form.password.errors }}
+            </div>
+            {{ form.non_field_errors }}
+
+            <button class="ui primary submit button" name="submit_button" id="submit_button" type="submit">Login</button>
+            <br> Forgot your password? Click
+            <a href='/password_reset/'>here</a>.
+
+        </div>
+    </form>
+    <div class="ui bottom attached warning message">
+        <i class="icon help"></i>
+        Haven't signed up yet?
+        <a href="/signup/">Signup here</a> instead.
+    </div>
+</div>
 
 
 

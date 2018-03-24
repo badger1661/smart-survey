@@ -1,63 +1,68 @@
-{% extends 'base.html' %}
-
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <div style="width: 50%; margin-left:auto; margin-right:auto;padding-bottom:15%">
-        <div class="ui raised container segment">
+    <div class="ui raised container segment">
         <div class="ui horizontal divider">Create New Class</div>
         <div class="ui form segment">
-                <div class="field">
-                    <label>Class Name</label>
-                        <input id="set_name" type="text" placeholder="Class Name">
+            <div class="field">
+                <label>Class Name</label>
+                <input id="set_name" type="text" placeholder="Class Name">
+            </div>
+            <div clas="field">
+                <label>
+                    <b>Search for Students to add</b>
+                </label>
+                <br>
+                <div class="ui left icon input">
+                    <input id="search_bar" type="text" placeholder="Search users...">
+                    <i class="users icon"></i>
+                </div>
+                <div style="padding-top:1%">
+                    <h4>Search Results:</h4>
+                    <div>
+                        <div class="ui relaxed divided list" id="suggested_students">
+                        </div>
                     </div>
-                    <div clas="field">
-                    <label><b>Search for Students to add</b></label><br>
-                    <div class="ui left icon input">
-                            <input id="search_bar" type="text" placeholder="Search users...">
-                            <i class="users icon"></i>
-                        </div>
-                        <div style="padding-top:1%">
-                            <h4>Search Results:</h4>
-                            <div>
-                                <div class="ui relaxed divided list" id="suggested_students">
-                                </div>
-                            </div>
-                            <h4>Students that will be added:</h4>
-                            <div class="ui relaxed divided list" id="students_to_add">
-    
-                            </div>
-                        </div>
-                        </div>
-                        <div class="ui divider"></div>
-                    <button class="ui green button" id="create_class">Submit</button>
-                        
+                    <h4>Students that will be added:</h4>
+                    <div class="ui relaxed divided list" id="students_to_add">
+
                     </div>
-            
-</div>    
+                </div>
+            </div>
+            <div class="ui divider"></div>
+            <button class="ui green button" id="create_class">Submit</button>
+
+        </div>
+
+    </div>
 </div>
 
 <script type="text/javascript">
-var csrftoken = Cookies.get('csrftoken');
+    var csrftoken = Cookies.get('csrftoken');
 
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
-});
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
 
-var suggested_students = $("#suggested_students");
-var search_bar = $('#search_bar');
+    var suggested_students = $("#suggested_students");
+    var search_bar = $('#search_bar');
 
-function clear(){
-    suggested_students.empty(); 
-    search_bar.val('');
-}
 
+    // WHEN USER CLICK ON STUDENT THIS EMPTIES THE SEARCH BAR
+    function clear() {
+        suggested_students.empty();
+        search_bar.val('');
+    }
+
+    // SENDS THE AJAX REQUEST TO BACKEND IF THE LENGTH OF WHAT THE USER HAS
+    // INPUTTED IS GREATER THAN 3
     search_bar.keyup(function () {
         var keyword = search_bar.val();
         if (keyword.length > 2) {
@@ -72,12 +77,13 @@ function clear(){
                     suggested_students.empty();
                     console.log(data)
                     var suggestions = data.students;
+                    // APPENDS THE HTML FOR EACH OF THE SUGGESTED STUDENTS TO THE SUGGESTED STUDENTDS DIV
                     for (i = 0; i < suggestions.length; i++) {
                         var current_student = suggestions[i];
                         var div = $("<a href='#'><div/></a>");
                         div.data("name", current_student[0]);
                         div.data("id", current_student[2]);
-                        div.html(current_student[0] + " (" + current_student[1]+ ")" + "<br>");
+                        div.html(current_student[0] + " (" + current_student[1] + ")" + "<br>");
                         div.addClass('item');
                         div.on("click", moveProfile);
                         suggested_students.append(div);
@@ -88,10 +94,11 @@ function clear(){
         }
     })
 
-var students_to_add = $("#students_to_add")
+    var students_to_add = $("#students_to_add")
     var ids = []
 
-
+    // MOVES THE USER CLICKED ON FROM THE SUGGESTED STUDENTS TAB AND MOVES IT TO THE 
+    // STUDENTS_TO_ADD SECTION
     function moveProfile() {
         var $this = $(this);
         var studentID = $this.data("id");
@@ -111,7 +118,8 @@ var students_to_add = $("#students_to_add")
         }
     }
 
-        $('#students_to_add').on('click', 'button', function () {
+    // REMOVES STUDENTS FROM THE STUDENTS_TO_ADD SECTION IF REMOVE BUTTON CLICKED ON
+    $('#students_to_add').on('click', 'button', function () {
         var $this = $(this).closest('.item');
         var studentID = $this.data("id");
         var pos = ids.indexOf(studentID);
@@ -119,39 +127,40 @@ var students_to_add = $("#students_to_add")
         $this.remove();
     });
 
-$("#create_class").on('click', function(){
-    var error = false;
-    var set_name = $("#set_name").val()
-    var url = window.location.pathname;
-    if(set_name.length < 4){
-        alert('Please enter in a name for the Class')
-    }
-    else if(ids.length == 0){
-        alert('Please add some Students')
+    // SENDS AJAX CALL TO CREATE CLASS
+    $("#create_class").on('click', function () {
 
-    }
-    else{
-    $.ajax({
-        method: "POST",
-        url: url,
-        data: {
-            'name': set_name,
-            'student_ids': JSON.stringify(ids),
-            },
-        dataType: 'json',
-        success: function (data) {
-            if(data.message){
-            alert(data.message)
-            }else{
-            location.href = data.url;//<--Redirect on success
-            }
+        // GETS VARIOUS INFO
+        var error = false;
+        var set_name = $("#set_name").val()
+        var url = window.location.pathname;
+
+        // SIMPLE VALIDATION
+        if (set_name.length < 4) {
+            alert('Please enter in a name for the Class')
         }
-        });
+        else if (ids.length == 0) {
+            alert('Please add some Students')
+
         }
-})
-    
-</script>
+        else {
+            $.ajax({
+                method: "POST",
+                url: url,
+                data: {
+                    'name': set_name,
+                    'student_ids': JSON.stringify(ids),
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.message) {
+                        alert(data.message)
+                    } else {
+                        location.href = data.url;//<--Redirect on success
+                    }
+                }
+            });
+        }
+    })
 
-{% endblock %}
-
-
+</script> {% endblock %}

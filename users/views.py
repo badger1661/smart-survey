@@ -15,18 +15,17 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
+import json
+from .models import Student, Teacher, School, Subject, SchoolAdmin, Set
+from .forms import StudentRegister, TeacherRegister, SetCreate
+from forms.models import Form, Answer
 
 import logging
 logger = logging.getLogger(__name__)
 
-import json
 
-from .models import Student, Teacher, School, Subject, SchoolAdmin, Set
-#from reviews.models import Form
-from .forms import StudentRegister, TeacherRegister, SetCreate
 
-from forms.models import Form, Answer
-# Create your views here.
+
 
 def activate(request, uidb64, token):
     #TRY GET USER BASED ON TOKEN
@@ -155,15 +154,15 @@ class create_set(LoginRequiredMixin, View):
     login_url = '/login/'
     template_name = 'users/create_set.html'
 
-    #If get request
+    #IF GET REQUEST
     def get(self, request):
         if request.is_ajax():
-            #Gets all students that are part of the teachers school
+            #GETS ALL TEH STUDENTS AT THE TEACHERS SCHOOL
             keyword = request.GET.get('keyword', None).lower()
             teacher_school = Teacher.objects.get(user = request.user).school
             students = Student.objects.filter(school = teacher_school)
             student_list = []
-            #Filters students against the keyword
+            #FILTERS STUDENTS AGAINST KEYWORD ENTERED BY TEACHER
             for student in students:
                 if keyword in student.user.get_full_name().lower() or keyword in student.user.email.lower():
                     to_add = [student.user.get_full_name(), student.user.email, student.user.id]
@@ -172,53 +171,63 @@ class create_set(LoginRequiredMixin, View):
 
             return JsonResponse(args)
         else:
-            return render(request, self.template_name)
+            if request.user.is_teacher():
+                return render(request, self.template_name)
+            else:
+                return HttpResponseRedirect("/profile/")
 
-    #If post request
+    #IF POST REQUEST
     def post(self, request):
-        #Gets the student IDs and turns it into a list
-        student_ids = request.POST.get('student_ids', None)
-        student_ids = json.loads(student_ids)
 
-        name = request.POST.get('name', None)
+        if request.user.is_teacher():
+            #GETS ALL THE STUDENT IDS AND MAKES THEM INTO A PYTHON LIST
+            student_ids = request.POST.get('student_ids', None)
+            student_ids = json.loads(student_ids)
 
-        form = SetCreate(request.POST)
-        
-        #Creates the Set Object
-        if len(name) >= 1 and len(student_ids) >= 1:
-            new_set = Set(name = name,
-                        teacher = request.user,
-                        )
-            new_set.save()
-                #Adds all the students by getting their user object by id.
-            for id_ in student_ids:
-                user = get_user_model().objects.get(pk = id_)
-                new_set.students.add(user)
+            name = request.POST.get('name', None)
+
+            form = SetCreate(request.POST)
+            
+            #CREATES THE SET OBJECT IF A NAME AND AT LEAST 1 STUDENT IS ENTERED
+            if len(name) >= 1 and len(student_ids) >= 1:
+                new_set = Set(name = name,
+                            teacher = request.user,
+                            )
                 new_set.save()
+                    #ADDS STUDENTS TO THE MANYTOMANY RELATIONSHIP VIA THEIR ID
+                for id_ in student_ids:
+                    user = get_user_model().objects.get(pk = id_)
+                    new_set.students.add(user)
+                    new_set.save()
 
-            url = '/class/{}/'.format(new_set.id)
-            args = {'url': url}
+                url = '/class/{}/'.format(new_set.id)
+                args = {'url': url}
+            else:
+                args = {'message': 'Please ensure you have a Class name and at least 1 Student you wish to add'}
+            
+            return JsonResponse(args)
         else:
-            args = {'message': 'Please ensure you have a Class name and at least 1 Student you wish to add'}
-        
-        return JsonResponse(args)
+            return HttpResponseRedirect("/profile/")
+            
 
 @login_required(login_url='/login/')
 def view_set(request, set_id):
-    #Gets the set object
+    #GETS THE SET OBJECT
     try:
         set_ = Set.objects.get(id = set_id)
     except ObjectDoesNotExist:
         return HttpResponse("<html><body>That Class doesnt exist</body></html>")
         
-    #teacher = set_.teacher
+
     user = request.user
-    #Checks if the client is the Sets teacher
+    #CHECKS IF THE USER IS THE SETS TEACHER
     if user != set_.teacher:
         return HttpResponse("<html><body>Not permitted to view that set</body></html>")
 
+    #GETS ALL THE STUDENTS
     students = set_.students.all()
-    print(students)
+
+    #GETS ALL THE TEACHERS
     forms = Form.objects.filter(teacher = user, setID = set_, duplicate = False)
     for form in forms:
         resends = Form.objects.filter(parent = form)

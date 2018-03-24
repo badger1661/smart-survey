@@ -1,59 +1,59 @@
-{% extends 'base.html' %}
-
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <div style="width: 60%; margin-left:auto; margin-right:auto;padding-bottom:15%">
     <div id="welcome" style="text-align: center;">
         <h2>
-            <u>{{ form_one.title }}'s Comparison between the Survey sent out <br>on {{form_one.date_created}} and {{form_two.date_created}}.</u>
+            <u>{{ form_one.title }}'s Comparison between the Survey sent out
+                <br>on {{form_one.date_created}} and {{form_two.date_created}}.</u>
         </h2>
     </div>
-<div class="ui divider"></div>
-    
-{% for question in responses %}
-<div>
+    <div class="ui divider"></div>
+    <!-- MAKE A CHART FOR EACH QUESTION -->
+    {% for question in responses %}
+    <div>
         <h3 class="ui left floated header" style="position: absolute">
             <u>{{ question.0.position|add:"1"}}.</u>
         </h3>
         <div class="question_text" style="display:flex;justify-content:center;align-items:center;padding-bottom:1%;">
             <h3>{{ question.0.question_text }}</h3>
-        </div>       
+        </div>
         <br>
 
         <div id="{{ question.0.name }}" style="height: 400px;"></div>
+        <!-- DRAW CHART -->
         <script type="text/javascript">
-            google.charts.load('current', {'packages':['bar']});
+            google.charts.load('current', { 'packages': ['bar'] });
             google.charts.setOnLoadCallback(drawChart);
-      
+
             function drawChart() {
-              var data = google.visualization.arrayToDataTable([
-                ['Rating', 'Survey sent {{form_one.date_created}} ', 'Survey sent {{form_two.date_created}} '],
-                ['Very Poor', {{ question.1.0.0}}, {{ question.1.1.0}}],
-                ['Poor', {{ question.1.0.1}}, {{ question.1.1.1}}],
-                ['Average', {{ question.1.0.2}}, {{ question.1.1.2}}],
-                ['Good', {{ question.1.0.3}}, {{ question.1.1.3}}],
-                ['Very Good', {{ question.1.0.4}}, {{ question.1.1.4}}]
+                var data = google.visualization.arrayToDataTable([
+                    ['Rating', 'Survey sent {{form_one.date_created}} ', 'Survey sent {{form_two.date_created}} '],
+                    ['Very Poor', {{ question.1.0.0 }}, { { question.1.1.0 } }],
+            ['Poor', {{ question.1.0.1 }}, {{ question.1.1.1 }}],
+                ['Average', {{ question.1.0.2 }}, {{ question.1.1.2 }}],
+                ['Good', {{ question.1.0.3 }}, {{ question.1.1.3 }}],
+                ['Very Good', {{ question.1.0.4 }}, {{ question.1.1.4 }}]
                 
               ]);
-      
-              var options = {
-                height: 400,   
+
+            var options = {
+                height: 400,
                 legend: {
-                            alignment: 'center',
-                            position: 'top'
-                        },
-                        theme: 'material'
-              };
-      
-              var chart = new google.charts.Bar(document.getElementById('{{ question.0.name }}'));
-      
-              chart.draw(data, options);
+                    alignment: 'center',
+                    position: 'top'
+                },
+                theme: 'material'
+            };
+
+            var chart = new google.charts.Bar(document.getElementById('{{ question.0.name }}'));
+
+            chart.draw(data, options);
             }
-          </script>
+        </script>
 
-<div class="ui divider"></div>
+        <div class="ui divider"></div>
 
-</div>
-{% endfor %}
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

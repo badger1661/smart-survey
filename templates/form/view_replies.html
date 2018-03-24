@@ -25,12 +25,13 @@
         </a>
 
     </div>
+    <!-- CHECK IF PEOPLE HAVE RESPONDED -->
     {% if amount_of_responses == 0%}
     <div style="text-align:center;">
         <h2>Looks like you havn't had any replies to your form yet</h2>
     </div>
     {% else %}
-    <!-- INDUVIDUAL -->
+    <!-- INDUVIDUAL RESPONSES-->
     <div id="induvidual" style='display: none'>
         <div class="ui two top attached buttons">
             <div id="previous" class="ui labeled icon button green disabled">Previous Response
@@ -44,6 +45,7 @@
         <div class="ui form attached segment">
 
             <div id="answers">
+                <!-- RENDER IN ANSWERS -->
                 {% for answer_set in induvidual_answers %}
                 <div class="answer" id="{{ answer_set.0 }}" style="display:none">
                     {% for answer in answer_set.1 %}
@@ -64,7 +66,9 @@
                     </div>
                     <div class="ui divider"></div>
 
-                    {% endfor %} {% if answer_set.2 %}
+                    {% endfor %}
+                    <!-- IF THERE IS AN ADDITIONAL COMMENT RENDER IT IN -->
+                    {% if answer_set.2 %}
 
                     <div class="question_text" style="display:flex;justify-content:center;align-items:center;padding-bottom:1%;">
                         <h3>Comment</h3>
@@ -84,7 +88,7 @@
     <!-- COLLECTIVE -->
     <div id="collective" style="margin-left:auto; margin-right:auto">
         <div class="ui form attached segment">
-
+            <!-- RENDER IN ALL QUESTIONS -->
             {% for question in collective_responses %}
             <div>
                 <h3 class="ui left floated header" style="position: absolute">
@@ -96,15 +100,15 @@
 
                 <div id="{{ question.0.name }}" style="width: 100%; height: 400px;"></div>
 
-
+                <!-- GOOGLE VISUALISATION TO MAKE THE PIE CHART -->
                 <script type="text/javascript">
                     google.charts.load('current', { 'packages': ['corechart'] });
                     google.charts.setOnLoadCallback(drawChart);
                     function drawChart() {
                         var data = google.visualization.arrayToDataTable([
-                            ['Rating', 'Amount'],
-                            ['Very Poor', {{ question.1.0 }}],
-                    ['Poor', {{ question.1.1 }}],
+                        ['Rating', 'Amount'],
+                        ['Very Poor', {{ question.1.0 }}],
+                        ['Poor', {{ question.1.1 }}],
                         ['Average', {{ question.1.2 }}],
                         ['Good', {{ question.1.3 }}],
                         ['Very Good', {{ question.1.4 }}],
@@ -127,6 +131,7 @@
         </div>
     </div>
     {% endif %}
+
     <!-- WHO RESPONDED -->
     <div id='responded' style='display: none'>
         {% if replied.count != 0 %}
@@ -135,6 +140,7 @@
                 <u>Students who have responded</u>
             </h3>
         </div>
+        <!-- TABLE FOR STUDENTS WHO HAVE RESPONDED -->
         <table class="ui padded celled table">
             <thead class="full-width">
                 <tr>
@@ -143,6 +149,7 @@
                 </tr>
             </thead>
             <tbody>
+
                 {% for student in replied %}
                 <tr>
 
@@ -154,14 +161,13 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% endif %}
-        {% if not_replied.count != 0 %}
+        {% endif %} {% if not_replied.count != 0 %}
         <div style='text-align: center'>
             <h3>
                 <u>Students who have NOT responded</u>
             </h3>
         </div>
-
+        <!-- TABLE FOR STUDENTS WHO HAVENT RESPONDED -->
         <table class="ui padded celled table">
             <thead class="full-width">
                 <tr>
@@ -196,26 +202,29 @@
     {% endif %}
 </div>
 <!-- END WHO RESPONDED -->
+
 <br>
+<!-- DELETE SURVEY BUTTON -->
 <button id="delete_button" class="ui right floated small negative button">Delete Survey</button>
 
+<!-- DELETE SURVEY CONFIRMATION -->
 <div class="ui basic modal" id="delete_modal">
     <div class="ui raised text container segment center aligned">
 
-      <div class="ui horizontal divider">Delete Survey</div>
-      <div class="ui form segment">
-        <h2>
-          <font color="black">Are you sure you want to delete {{ form.title }}</font>
-        </h2>
+        <div class="ui horizontal divider">Delete Survey</div>
+        <div class="ui form segment">
+            <h2>
+                <font color="black">Are you sure you want to delete {{ form.title }}</font>
+            </h2>
 
-          <button id='confirm_delete' class="ui primary button large">
-            Yes, I am sure
-          </button>
+            <button id='confirm_delete' class="ui primary button large">
+                Yes, I am sure
+            </button>
 
 
-      </div>
+        </div>
     </div>
-  </div>
+</div>
 
 </div>
 
@@ -223,11 +232,11 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-  $('#delete_modal').modal('attach events', '#delete_button', 'show');
-        
+        $('#delete_modal').modal('attach events', '#delete_button', 'show');
+
         $('.ui.rating').rating('disable');
         $("#1").css('display', '');
-    
+
         var csrftoken = Cookies.get('csrftoken');
 
         function csrfSafeMethod(method) {
@@ -241,25 +250,28 @@
                 }
             }
         });
-
+        
+        // AJAX FOR DELETING A SURVEY
         var confirm_delete = $('#confirm_delete');
 
-        confirm_delete.on('click', function(){
+        confirm_delete.on('click', function () {
             var form_id = '{{ form.id }}';
 
             $.ajax({
-            method: 'POST',
-            url: '/ajax/delete_survey/',
-            data: {
-            'id': form_id,
-            },
-            dataType: 'json',
-            success: function (data) {
-                location.href = '/profile/';
-            }
+                method: 'POST',
+                url: '/ajax/delete_survey/',
+                data: {
+                    'id': form_id,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    location.href = '/profile/';
+                }
             })
         })
 
+
+        // JAVASCRIPT TO CONTROL THE TABS
         var induvidual_responses_button = $("#induvidual_responses_button");
         var induvidual = $("#induvidual");
         var collective_responses_button = $("#collective_responses_button");
@@ -299,6 +311,7 @@
 
         })
 
+        // AJAX TO SEND EMAIL REMINDERS
         $('#reminder_button').on('click', function () {
             var ids = [];
             $('.not_responded').each(function () {
@@ -308,24 +321,24 @@
             var form_id = url[2];
             console.log(ids)
             $.ajax({
-            method: 'POST',
-            url: '/ajax/reminder/',
-            data: {
-            'ids': JSON.stringify(ids),
-            'form_id': form_id,
-            },
-            dataType: 'json',
-            success: function (data) {
-                if(data.error){
-                    alert('An error occured, please refresh the page and try again!')
-                }else{
-                alert('Students have been sent an email to remind them to answer this survey.')
+                method: 'POST',
+                url: '/ajax/reminder/',
+                data: {
+                    'ids': JSON.stringify(ids),
+                    'form_id': form_id,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.error) {
+                        alert('An error occured, please refresh the page and try again!')
+                    } else {
+                        alert('Students have been sent an email to remind them to answer this survey.')
+                    }
                 }
-            }
             })
         })
 
-
+        // COUNTER TO KEEP TRACK OF WHICH INDUVIDUAL ANSWER IS THE CURRENT/NEXT/PERVIOUS ONE
         var answer_counter = 1;
         var amount_of_answers = '{{amount_of_responses}}';
 

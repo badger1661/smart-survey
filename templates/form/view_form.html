@@ -1,166 +1,167 @@
-{% extends "base.html" %}
-
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 
 <div style="width: 60%; margin-left:auto; margin-right:auto;padding-bottom:15%">
-    <div class="ui horizontal divider"><h2>{{ form.title }}</h2></div>
-      
-      <h4 class="ui center aligned header">
+  <div class="ui horizontal divider">
+    <h2>{{ form.title }}</h2>
+  </div>
 
-          This form was sent to <a href="{{ form.setID.view_set }}">{{ form.setID.name }}</a>
-  
-        </h4>
-      <table class="ui padded celled table">
-            <thead class="full-width">
-              <tr>
-                <th style="text-align: center" class="six wide">Survey Name</th>
-                <th style="text-align: center" class="four wide">Date Sent</th>
-                <th style="text-align: center" class="two wide">Responses</th>
-                <th style="text-align: center" class="two wide">Compare</th>
-              </tr>
-            </thead>
-            <tbody>
-                {% for form in forms %}
-              <tr>
-                
-                <td style="text-align: center"><a href="{{ form.view_replies }}">{{ form.title }}</a></td>
-                <td style="text-align: center">{{ form.date_created }}</td>
-                <td style="text-align: center">{{ form.responses }}/{{ form.setID.amount_of_students }}</td>
-                <td class="collapsing compact">
-                    <div style="display:flex;justify-content:center;align-items:center;">
-                      <div class="ui checkbox">
-                        <input class="compare_checkbox" type="checkbox" id="{{ form.id }}"><label></label>
-                      </div></div>
-                    </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-            <tfoot>
-                    <tr>
+  <h4 class="ui center aligned header">
 
-                      <th colspan="4">
-                        <button id="compare_button" class="ui right floated small primary button">
-                        Compare</button>
-                        </div>
-                    
-                      </th>
-                    </tr>
-                  </tfoot>
-          </table>
+    This form was sent to
+    <a href="{{ form.setID.view_set }}">{{ form.setID.name }}</a>
+
+  </h4>
+
+  <!-- TABLE SHOWING ALL ITERATIONS OF THE SURVEYS -->
+  <table class="ui padded celled table">
+    <thead class="full-width">
+      <tr>
+        <th style="text-align: center" class="six wide">Survey Name</th>
+        <th style="text-align: center" class="four wide">Date Sent</th>
+        <th style="text-align: center" class="two wide">Responses</th>
+        <th style="text-align: center" class="two wide">Compare</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- ADDS EACH SURVEY TO THE TABLE -->
+      {% for form in forms %}
+      <tr>
+
+        <td style="text-align: center">
+          <a href="{{ form.view_replies }}">{{ form.title }}</a>
+        </td>
+        <td style="text-align: center">{{ form.date_created }}</td>
+        <td style="text-align: center">{{ form.responses }}/{{ form.setID.amount_of_students }}</td>
+        <td class="collapsing compact">
+          <div style="display:flex;justify-content:center;align-items:center;">
+            <div class="ui checkbox">
+              <input class="compare_checkbox" type="checkbox" id="{{ form.id }}">
+              <label></label>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+
+        <th colspan="4">
+          <button id="compare_button" class="ui right floated small primary button">
+            Compare</button>
+</div>
+
+</th>
+</tr>
+</tfoot>
+</table>
 
 <div style="padding-top: 1%">
-    <div class="ui horizontal divider"><h2>What this form looks like to your students</h2></div>
+  <div class="ui horizontal divider">
+    <h2>What this form looks like to your students</h2>
+  </div>
 
-    <div class="form_title">
-        <h2 class="ui center aligned header" style="padding-bottom:1%;">
-          <u>
-          {{ form.title }}
-        </u>
-        </h2>
-      </div>
+  <div class="form_title">
+    <h2 class="ui center aligned header" style="padding-bottom:1%;">
+      <u>
+        {{ form.title }}
+      </u>
+    </h2>
+  </div>
 </div>
 <div class="form_set_date">
-    <h4 class="ui center aligned header">
+  <h4 class="ui center aligned header">
 
-        Date Sent: {{ form.date_created }}
+    Date Sent: {{ form.date_created }}
 
-      </h4>
+  </h4>
 </div>
 <div style="padding-bottom:10%; padding-top:1%;">
-<div class="ui form segment" style="text-align:center;">
-{{ form.description }}
+  <div class="ui form segment" style="text-align:center;">
+    {{ form.description }}
 
-<div style="padding-bottom:1%">
+    <div style="padding-bottom:1%">
 
 
-</div>
-<div class="ui divider"></div>
-<div id="questions" style="margin-left:auto;margin-right:auto;">
-
-{% for question in questions %}
-<div>
-    <h3 class="ui left floated header" style="position: absolute"><u>{{ question.position }}.</u></h3>
-
-<div class="question">
-  
-
-<div class="question_text" style="display:flex;justify-content:center;align-items:center;padding-bottom:1%;">
-  
-<h3>{{ question.question_text }}</h3>
-</div>
-
-<div class="question_stars" style="display:flex;justify-content:center;align-items:center;">
-  <u>Very Poor</u><div class="ui star rating massive star_rating" data-max-rating="5">
     </div>
-    <u>Very Good</u>
+    <div class="ui divider"></div>
+    <div id="questions" style="margin-left:auto;margin-right:auto;">
+      <!-- ADDS A QUESTION ANSWER FOR EACH QUESTION -->
+      {% for question in questions %}
+      <div>
+        <h3 class="ui left floated header" style="position: absolute">
+          <u>{{ question.position }}.</u>
+        </h3>
+
+        <div class="question">
+
+
+          <div class="question_text" style="display:flex;justify-content:center;align-items:center;padding-bottom:1%;">
+
+            <h3>{{ question.question_text }}</h3>
+          </div>
+
+          <div class="question_stars" style="display:flex;justify-content:center;align-items:center;">
+            <u>Very Poor</u>
+            <div class="ui star rating massive star_rating" data-max-rating="5">
+            </div>
+            <u>Very Good</u>
+          </div>
+        </div>
+      </div>
+      <div class="ui divider"></div>
+
+      <!-- RENDERS ADDITIONAL COMMENTS SECTION IF SURVEY NEEDS IT -->
+      {% endfor %} {% if form.additionalcomment == True %}
+      <div class="field">
+        <h3>Additional Comments</h3>
+        <textarea rows="2"></textarea>
+      </div>
+      <div class="ui divider"></div>
+      {% endif %}
+
+      <button class="ui green button" id="submit_answers">Submit</button>
+    </div>
   </div>
-</div>
-</div>
-<div class="ui divider"></div>
 
-{% endfor %}
+  <script type="text/javascript">
 
-{% if form.additionalcomment == True %}
-<div class="field">
-    <h3>Additional Comments</h3>
-    <textarea rows="2"></textarea>
-  </div>
-<div class="ui divider"></div>
-{% endif %}
+    $(document).ready(function () {
+      $(".rating")
+        .rating();
 
-<button class="ui green button" id="submit_answers">Submit</button>
-</div>
-</div>
+      $('.ui.radio.checkbox')
+        .checkbox()
+        ;
+    });
 
 
+    var compare_button = $("#compare_button");
+    var submit = $("#submit_answers");
 
-
-<script type="text/javascript">
-
-$(document).ready(function(){
-    $(".rating")
-    .rating();
-
-    $('.ui.radio.checkbox')
-  .checkbox()
-;
-});
-
-
-var compare_button = $("#compare_button");
-var submit = $("#submit_answers");
-
-$(compare_button).click(function(){
-    var checked_ids = [];
-    $('.compare_checkbox').each(function(){
+    $(compare_button).click(function () {
+      // GETS THE TWO IDS OF THE SURVEYS TO COMPARE
+      var checked_ids = [];
+      $('.compare_checkbox').each(function () {
         var x = $(this).is(':checked');
-        
-        if(x==true){
-            var id = $(this).attr('id');
-            checked_ids.push(id);
+
+        if (x == true) {
+          var id = $(this).attr('id');
+          checked_ids.push(id);
         }
 
 
+      })
+      // ENSURES ONLY 2 SURVEYS SELECTED
+      if (checked_ids.length != 2) {
+        alert('Please select exactly 2 Surveys to compare!')
+      }
+
+      else {
+        // REDIRECTS TO THE URL
+        var url = '/form/compare/' + checked_ids[0] + '/' + checked_ids[1];
+        location.href = url;
+      }
     })
-    if(checked_ids.length != 2){
-          alert('Please select exactly 2 Surveys to compare!')
-        }
-    else{
-      var url = '/form/compare/' + checked_ids[0] + '/' + checked_ids[1];
-      location.href = url;
-    }
-})
 
-$(submit).click(function(){
-  $('.star_rating').each(function(){
-    var x = $(this).rating('get rating');
-    console.log(x)
-  })
-})
-
-</script>
-
-{% endblock %}
-
-
+  </script> {% endblock %}
