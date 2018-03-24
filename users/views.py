@@ -13,7 +13,7 @@ from django.utils import six
 from django.contrib.auth import login
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 import json
 from .models import Student, Teacher, School, Subject, SchoolAdmin, Set
