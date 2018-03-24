@@ -104,6 +104,7 @@
         var additionalcomments = $("#additional_comments_checkbox").prop("checked");
         var questions = [];
 
+
         // GETS EACH QUESTION
         $(".question_input").each(function () {
             var question = $(this).val();
@@ -139,6 +140,7 @@
         } else {
             questions = JSON.stringify(questions);
             var url = window.location.pathname;
+            console.log('valid')
             $.ajax({
                 method: "POST",
                 url: url,

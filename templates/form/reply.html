@@ -114,11 +114,8 @@
             // CHECKS A COMMENT EXISTS
             if ($('#comment_div').length) {
                 var comment = $("#comment").val();
-                if (comment == "") {
-                    error = true;
-                } else {
-                    data["comment"] = comment;
-                }
+                data["comment"] = comment;
+                
             }
 
             // ENSURES NO QUESTION HAS A 0 STAR RATING OR MORE THAN 5

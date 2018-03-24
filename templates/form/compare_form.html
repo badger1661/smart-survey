@@ -28,7 +28,7 @@
             function drawChart() {
                 var data = google.visualization.arrayToDataTable([
                     ['Rating', 'Survey sent {{form_one.date_created}} ', 'Survey sent {{form_two.date_created}} '],
-                    ['Very Poor', {{ question.1.0.0 }}, { { question.1.1.0 } }],
+                    ['Very Poor', {{ question.1.0.0 }}, {{ question.1.1.0 }}],
             ['Poor', {{ question.1.0.1 }}, {{ question.1.1.1 }}],
                 ['Average', {{ question.1.0.2 }}, {{ question.1.1.2 }}],
                 ['Good', {{ question.1.0.3 }}, {{ question.1.1.3 }}],

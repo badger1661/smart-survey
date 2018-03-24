@@ -46,16 +46,16 @@ class create_form(LoginRequiredMixin, View):
             comments = True
         else:
             comments = False
-
         if request.user.is_teacher():
 
             #GET QUESTION TEXT INTO PYTHON LIST
             questions = json.loads(questions)
             question_ids = []
 
-            if title or description or setid == None:
+            if (title or description or setid) == None:
+
                 return JsonResponse({'message':'Please ensure you have correctly filled out the form'})
-                
+            print('title ok')
             set_ = Set.objects.get(pk = setid)
             
             for question in questions:
@@ -269,6 +269,10 @@ class reply(LoginRequiredMixin, View):
             except ObjectDoesNotExist:
                 pass
             if answers:
+                return True
+            
+            set_students = form.setID.students
+            if not set_students.filter(id = user.id).exists():
                 return True
         else:
             return True
