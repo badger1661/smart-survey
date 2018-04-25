@@ -340,6 +340,7 @@ class reply(LoginRequiredMixin, View):
         
         return JsonResponse({})
 
+@login_required
 def compare_form(request, form_one = None, form_two = None):
     user = request.user
     #checks if the forms exist
